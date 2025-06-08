@@ -29,6 +29,16 @@
       <x-invoice.stat-card title="Pending Amount" value="$7,250.00" color="yellow" />
     </div>
 
+    <div class="mb-4">
+      <label class="text-sm font-medium text-gray-700 mr-2">Filter Status:</label>
+      <select id="filter-remark" class="border border-gray-300 rounded px-3 py-1 text-sm">
+        <option value="">All</option>
+        <option value="DONE">Done Payment</option>
+        <option value="PROCES">Process Payment</option>
+        <option value="WAITING">Waiting Payment</option>
+      </select>
+    </div>
+
     <!-- Table -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div class="overflow-x-auto">
@@ -61,10 +71,15 @@
   @push('scripts')
     <script>
       $(document).ready(function() {
-        $('#invoice-table').DataTable({
+        const table = $('#invoice-table').DataTable({
           processing: true,
           serverSide: true,
-          ajax: '{{ route('invoices.datatable') }}',
+          ajax: {
+            url: '{{ route('invoices.datatable') }}',
+            data: function(d) {
+              d.remark_filter = $('#filter-remark').val();
+            }
+          },
           columns: [{
               data: 'no'
             }, {
@@ -104,6 +119,9 @@
               data: 'date_payment'
             },
           ]
+        });
+        $('#filter-remark').change(function() {
+          table.ajax.reload();
         });
       });
     </script>
