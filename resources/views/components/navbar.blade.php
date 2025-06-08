@@ -22,10 +22,10 @@
     <!-- Right side - User info or additional controls -->
     <div class="flex items-center space-x-4">
       <!-- Notification Bell -->
-      <button class="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 relative">
+      {{-- <button class="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 relative">
         <x-icon name="bell" class="h-5 w-5" />
         <span class="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></span>
-      </button>
+      </button> --}}
 
       <!-- User Avatar -->
       <div class="flex items-center space-x-2">

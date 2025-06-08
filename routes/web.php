@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,9 +19,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
     Route::get('/index', [DashboardController::class, 'index'])->name('index.dashboard');
-    Route::get('/invoices', [DashboardController::class, 'invoices'])->name('invoices.index');
     Route::get('/salary', [DashboardController::class, 'salaries'])->name('salaries.index');
-
+    
+    Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('/invoice', [InvoiceController::class, 'datatable'])->name('invoices.datatable');
 
 });
 

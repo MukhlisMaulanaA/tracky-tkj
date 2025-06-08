@@ -17,14 +17,14 @@
       x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
       x-transition:leave="transition ease-in-out duration-300" x-transition:leave-start="opacity-100 scale-100"
       x-transition:leave-end="opacity-0 scale-95">
-      <h1 class="text-xl font-bold text-gray-900">DashPro</h1>
+      <h1 class="text-xl font-bold text-gray-900">Tracky TKJ</h1>
     </div>
     <div x-show="collapsed" x-transition:enter="transition ease-in-out duration-300"
       x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
       x-transition:leave="transition ease-in-out duration-300" x-transition:leave-start="opacity-100 scale-100"
       x-transition:leave-end="opacity-0 scale-95">
       <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-        <span class="text-white font-bold text-sm">DP</span>
+        <span class="text-white font-bold text-sm">TR</span>
       </div>
     </div>
   </div>

@@ -12,10 +12,10 @@ class DashboardController extends Controller
     return view('dashboard.index');
   }
 
-  public function invoices(Request $request): View
-  {
-    return view('dashboard.invoice');
-  }
+  // public function invoices(Request $request): View
+  // {
+  //   return view('dashboard.invoice');
+  // }
 
   public function salaries(Request $request): View
   {
