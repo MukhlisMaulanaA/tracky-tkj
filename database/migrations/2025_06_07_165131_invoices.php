@@ -5,38 +5,37 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-  /**
-   * Run the migrations.
-   */
-  public function up(): void
+  public function up()
   {
     Schema::create('invoices', function (Blueprint $table) {
       $table->id();
-      $table->integer('no');
-      $table->year('tahun');
-      $table->string('project');
-      $table->date('create_tanggal')->nullable();
-      $table->date('submit_tanggal')->nullable();
-      $table->string('no_po');
-      $table->string('no_invoice');
-      $table->string('remark')->nullable();
-      $table->string('costumer');
-      $table->decimal('amount', 20, 2)->default(0);
-      $table->decimal('vat_11', 20, 2)->nullable(); // PPN
-      $table->decimal('pph_2', 20, 2)->nullable();  // PPH
-      $table->decimal('denda', 20, 2)->nullable();
-      $table->decimal('payment_vat', 20, 2)->nullable(); // Payment Net
-      $table->decimal('real_payment', 20, 2)->nullable(); // Real Payment
+      $table->string('sequential_number');
+      $table->string('year', 4);
+      $table->string('project_name');
+      $table->date('create_date')->nullable();
+      $table->date('submit_date')->nullable();
       $table->date('date_payment')->nullable();
+      $table->string('po_number')->nullable();
+      $table->string('invoice_number')->nullable();
+      $table->text('remark')->nullable();
+      $table->string('customer_name');
+      $table->decimal('amount', 15, 2);
+      $table->decimal('vat_11', 15, 2)->nullable();
+      $table->decimal('pph_2', 15, 2)->nullable();
+      $table->decimal('fine', 15, 2)->nullable();
+      $table->decimal('payment_vat', 15, 2)->nullable();
+      $table->decimal('real_payment', 15, 2)->nullable();
       $table->timestamps();
-    });
 
+      // Indexes for better performance
+      $table->index('sequential_number');
+      $table->index('year');
+      $table->index('customer_name');
+      $table->index('created_at');
+    });
   }
 
-  /**
-   * Reverse the migrations.
-   */
-  public function down(): void
+  public function down()
   {
     Schema::dropIfExists('invoices');
   }

@@ -3,8 +3,9 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="_token" content="{{ csrf_token() }}">
   <title>Dashboard</title>
-  @vite('resources/css/app.css')
+  @vite('resources/css/app.css', 'resources/js/app.js')
   <script src="https://unpkg.com/lucide@latest"></script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
@@ -57,6 +58,7 @@
   </div>
   <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
   <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+
 </body>
 
 </html>

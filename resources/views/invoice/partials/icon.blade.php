@@ -1,11 +1,6 @@
-@props([
-    'name' => 'circle',
-    'class' => 'w-4 h-4',
-])
+@props(['name', 'class' => 'w-4 h-4'])
 
-
-<i data-lucide="{{ $name }}" class="{{ $class }}"></i>
-{{-- @switch($name)
+@switch($name)
   @case('save')
     <svg {{ $attributes->merge(['class' => $class]) }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -108,14 +103,4 @@
       </path>
     </svg>
   @break
-@endswitch --}}
-
-@once
-  @push('scripts')
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        lucide.createIcons();
-      });
-    </script>
-  @endpush
-@endonce
+@endswitch

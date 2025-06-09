@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Log;
+use App\Http\Requests\InvoiceRequest;
 use Yajra\DataTables\Facades\DataTables;
 
 class InvoiceController extends Controller
@@ -65,41 +68,89 @@ class InvoiceController extends Controller
    */
   public function create()
   {
-    //
+    $years = collect(range(date('Y'), date('Y') - 9))
+      ->mapWithKeys(fn($year) => [$year => $year])
+      ->toArray();
+
+    $projectSuggestions = [
+      'Digital Transformation Project',
+      'Website Development',
+      'Mobile App Development',
+      'System Integration',
+      'Cloud Migration',
+      'Data Analytics Platform'
+    ];
+
+    $customerSuggestions = [
+      'PT. Technology Solutions',
+      'CV. Digital Innovation',
+      'PT. Global Systems',
+      'PT. Smart Industries',
+      'CV. Tech Partners'
+    ];
+
+    return view('dashboard.invoice.create', compact('years', 'projectSuggestions', 'customerSuggestions'));
   }
 
   /**
    * Store a newly created resource in storage.
    */
-  public function store(Request $request)
+  public function store(InvoiceRequest $request)
   {
-    $validated = $request->validate([
-      'no' => 'required|integer',
-      'tahun' => 'required|integer',
-      'project' => 'required|string',
-      'create_tanggal' => 'nullable|date',
-      'submit_tanggal' => 'nullable|date',
-      'no_po' => 'required|string',
-      'no_invoice' => 'required|string',
-      'remark' => 'nullable|string',
-      'costumer' => 'required|string',
-      'amount' => 'required|numeric',
-      'denda' => 'nullable|numeric',
-      'date_payment' => 'nullable|date',
-    ]);
+    DB::beginTransaction();
 
-    $amount = $validated['amount'];
-    $vat = $amount * 0.11;
-    $pph = $amount * 0.02;
+    try {
+      $invoice = Invoice::create([
+        'sequential_number' => $request->sequential_number,
+        'year' => $request->year,
+        'project_name' => $request->project_name,
+        'create_date' => $request->create_date,
+        'submit_date' => $request->submit_date,
+        'date_payment' => $request->date_payment,
+        'po_number' => $request->po_number,
+        'invoice_number' => $request->invoice_number,
+        'remark' => $request->remark,
+        'customer_name' => $request->customer_name,
+        'amount' => $this->parseCurrency($request->amount),
+        'vat_11' => $this->parseCurrency($request->vat_11),
+        'pph_2' => $this->parseCurrency($request->pph_2),
+        'fine' => $this->parseCurrency($request->fine),
+        'payment_vat' => $this->parseCurrency($request->payment_vat),
+        'real_payment' => $this->parseCurrency($request->real_payment),
+      ]);
 
-    $validated['vat_11'] = $vat;
-    $validated['pph_2'] = $pph;
-    $validated['payment_vat'] = $amount + $vat;
-    $validated['real_payment'] = $amount - $pph;
+      DB::commit();
 
-    Invoice::create($validated);
+      // Always return JSON for AJAX requests
+      if ($request->expectsJson() || $request->ajax()) {
+        return response()->json([
+          'success' => true,
+          'message' => 'Payment form submitted successfully!',
+          'redirect' => route('invoice.show', $invoice->id)
+        ]);
+      }
 
-    return redirect()->route('invoices.index')->with('success', 'Invoice created successfully.');
+      return redirect()
+        ->route('invoice.show', $invoice)
+        ->with('success', 'Payment form submitted successfully!');
+
+    } catch (\Exception $e) {
+      DB::rollBack();
+
+      Log::error('Payment creation failed: ' . $e->getMessage());
+
+      if ($request->expectsJson() || $request->ajax()) {
+        return response()->json([
+          'success' => false,
+          'message' => 'An error occurred while saving the payment.',
+          'error' => config('app.debug') ? $e->getMessage() : null
+        ], 500);
+      }
+
+      return back()
+        ->withInput()
+        ->with('error', 'An error occurred while saving the payment.');
+    }
   }
 
   /**
@@ -115,41 +166,85 @@ class InvoiceController extends Controller
    */
   public function edit(Invoice $invoice)
   {
-    //
+    $years = collect(range(date('Y'), date('Y') - 9))
+      ->mapWithKeys(fn($year) => [$year => $year])
+      ->toArray();
+
+    $projectSuggestions = [
+      'Digital Transformation Project',
+      'Website Development',
+      'Mobile App Development',
+      'System Integration',
+      'Cloud Migration',
+      'Data Analytics Platform'
+    ];
+
+    $customerSuggestions = [
+      'PT. Technology Solutions',
+      'CV. Digital Innovation',
+      'PT. Global Systems',
+      'PT. Smart Industries',
+      'CV. Tech Partners'
+    ];
+
+    return view('payment.form', compact('invoice', 'years', 'projectSuggestions', 'customerSuggestions'));
   }
 
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, Invoice $invoice)
+  public function update(InvoiceRequest $request, Invoice $invoice)
   {
-    $validated = $request->validate([
-      'no' => 'required|integer',
-      'tahun' => 'required|integer',
-      'project' => 'required|string',
-      'create_tanggal' => 'nullable|date',
-      'submit_tanggal' => 'nullable|date',
-      'no_po' => 'required|string',
-      'no_invoice' => 'required|string',
-      'remark' => 'nullable|string',
-      'costumer' => 'required|string',
-      'amount' => 'required|numeric',
-      'denda' => 'nullable|numeric',
-      'date_payment' => 'nullable|date',
-    ]);
+    DB::beginTransaction();
 
-    $amount = $validated['amount'];
-    $vat = $amount * 0.11;
-    $pph = $amount * 0.02;
+    try {
+      $invoice->update([
+        'sequential_number' => $request->sequential_number,
+        'year' => $request->year,
+        'project_name' => $request->project_name,
+        'create_date' => $request->create_date,
+        'submit_date' => $request->submit_date,
+        'date_payment' => $request->date_payment,
+        'po_number' => $request->po_number,
+        'invoice_number' => $request->invoice_number,
+        'remark' => $request->remark,
+        'customer_name' => $request->customer_name,
+        'amount' => $this->parseCurrency($request->amount),
+        'vat_11' => $this->parseCurrency($request->vat_11),
+        'pph_2' => $this->parseCurrency($request->pph_2),
+        'fine' => $this->parseCurrency($request->fine),
+        'payment_vat' => $this->parseCurrency($request->payment_vat),
+        'real_payment' => $this->parseCurrency($request->real_payment),
+      ]);
 
-    $validated['vat_11'] = $vat;
-    $validated['pph_2'] = $pph;
-    $validated['payment_vat'] = $amount + $vat;
-    $validated['real_payment'] = $amount - $pph;
+      DB::commit();
 
-    $invoice->update($validated);
+      if ($request->ajax()) {
+        return response()->json([
+          'success' => true,
+          'message' => 'Payment updated successfully!',
+          'redirect' => route('payment.show', $invoice)
+        ]);
+      }
 
-    return redirect()->route('invoices.index')->with('success', 'Invoice updated successfully.');
+      return redirect()
+        ->route('payment.show', $invoice)
+        ->with('success', 'Payment updated successfully!');
+
+    } catch (\Exception $e) {
+      DB::rollBack();
+
+      if ($request->ajax()) {
+        return response()->json([
+          'success' => false,
+          'message' => 'An error occurred while updating the payment.'
+        ], 500);
+      }
+
+      return back()
+        ->withInput()
+        ->with('error', 'An error occurred while updating the payment.');
+    }
   }
 
   /**
@@ -158,5 +253,18 @@ class InvoiceController extends Controller
   public function destroy(Invoice $invoice)
   {
     //
+  }
+
+  private function parseCurrency($value)
+  {
+    if (empty($value))
+      return 0;
+
+    // Remove currency formatting (Rp, dots for thousands, spaces)
+    $value = str_replace(['Rp', '.', ' '], '', $value);
+    // Replace comma with period for decimal (if any)
+    $value = str_replace(',', '.', $value);
+
+    return (float) $value;
   }
 }
