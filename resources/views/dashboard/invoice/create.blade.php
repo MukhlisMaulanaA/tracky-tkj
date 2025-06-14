@@ -7,40 +7,71 @@
     <form method="POST" action="{{ route('invoice.store') }}" class="bg-white shadow rounded-lg p-6 space-y-6">
       @csrf
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- ID Project -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">ID Project</label>
-          <select id="id_project" name="id_project" class="form-select w-full border-gray-300 rounded-md" required>
-            <option value="">-- Pilih Project --</option>
-            @foreach ($projects as $project)
-              <option value="{{ $project->id_project }}">{{ $project->id_project }} - {{ $project->project_name }}
-              </option>
-            @endforeach
-          </select>
-        </div>
+      <!-- ID Project -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">ID Project</label>
+        <select id="id_project" name="id_project" class="form-select w-full border-gray-300 rounded-md" required>
+          <option value="">-- Pilih Project --</option>
+          @foreach ($projects as $project)
+            <option value="{{ $project->id_project }}">{{ $project->id_project }} - {{ $project->project_name }}
+            </option>
+          @endforeach
+        </select>
+      </div>
 
+      {{-- Project Details --}}
+      <div class="flex items-center">
+        <h4 class="text-sm font-bold text-gray-800">Project Details </h4>
+        <hr class="flex-grow border-t-1 border-gray-500 font-bold ml-2">
+      </div>
+      <div class="grid grid-cols-5 grid-rows-1 gap-4">
         <!-- Nama Customer -->
-        <div>
+        <div class="col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1">Nama Customer</label>
           <input type="text" id="customer_name" name="customer_name"
             class="form-input w-full border-gray-300 rounded-md" readonly>
         </div>
 
         <!-- Nama Project -->
-        <div>
+        <div class="col-span-2 col-start-3">
           <label class="block text-sm font-medium text-gray-700 mb-1">Nama Project</label>
           <input type="text" id="project_name" name="project_name" class="form-input w-full border-gray-300 rounded-md"
             readonly>
         </div>
 
         <!-- Tahun -->
-        <div>
+        <div class="col-start-5">
           <label class="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
-          <input type="text" name="year" maxlength="4" class="form-input w-full border-gray-300 rounded-md"
-            required>
+          <input type="text" id="year" name="year" maxlength="4" class="form-input w-full border-gray-300 rounded-md"
+            readonly>
+        </div>
+      </div>
+
+      {{-- Index Details --}}
+      <div class="flex items-center">
+        <h4 class="text-sm font-bold text-gray-800">Index Details</h4>
+        <hr class="flex-grow border-t-1 border-gray-500 font-bold ml-2">
+      </div>
+      <div class="grid grid-cols-4 grid-rows-1 gap-4">
+        <!-- Nomor PO -->
+        <div class="col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nomor PO</label>
+          <input type="text" id="po_number" name="po_number" class="form-input w-full border-gray-300 rounded-md">
         </div>
 
+        <!-- Nomor Invoice -->
+        <div class="col-span-2 col-start-3">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Invoice</label>
+          <input type="text" name="invoice_number" class="form-input w-full border-gray-300 rounded-md">
+        </div>
+      </div>
+
+      {{-- Date Details --}}
+      <div class="flex items-center">
+        <h4 class="text-sm font-bold text-gray-700">Date Details</h4>
+        <hr class="flex-grow border-t-1 border-gray-500 font-bold ml-2">
+      </div>
+      <div class="grid grid-cols-3 grid-rows-1 gap-4">
         <!-- Create Date -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Buat</label>
@@ -58,23 +89,32 @@
           <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Pembayaran</label>
           <input type="date" name="date_payment" class="form-input w-full border-gray-300 rounded-md">
         </div>
+      </div>
 
-        <!-- Nomor PO -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Nomor PO</label>
-          <input type="text" id="po_number" name="po_number" class="form-input w-full border-gray-300 rounded-md">
-        </div>
-
-        <!-- Nomor Invoice -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Invoice</label>
-          <input type="text" name="invoice_number" class="form-input w-full border-gray-300 rounded-md">
-        </div>
-
+      {{-- Amount Details --}}
+      <div class="flex items-center">
+        <h4 class="text-sm font-bold text-gray-800">Amount Details</h4>
+        <hr class="flex-grow border-t-1 border-gray-500 font-bold ml-2">
+      </div>
+      <div class="grid grid-cols-3 grid-rows-2 gap-6">
         <!-- Amount -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
           <input type="number" step="0.01" name="amount" class="form-input w-full border-gray-300 rounded-md"
+            required>
+        </div>
+
+        <!-- VAT 11% -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">VAT 11%</label>
+          <input type="number" step="0.01" name="vat_11" class="form-input w-full border-gray-300 rounded-md"
+            required>
+        </div>
+
+        <!-- PPH 2% -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">PPH 2%</label>
+          <input type="number" step="0.01" name="pph_2" class="form-input w-full border-gray-300 rounded-md"
             required>
         </div>
 
@@ -83,19 +123,33 @@
           <label class="block text-sm font-medium text-gray-700 mb-1">Denda</label>
           <input type="number" step="0.01" name="denda" class="form-input w-full border-gray-300 rounded-md">
         </div>
+
+        <!-- Payment VAT/PPH 11/2 -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Payment VAT/PPH 11/2</label>
+          <input type="number" step="0.01" name="payment_vat" class="form-input w-full border-gray-300 rounded-md">
+        </div>
+
+        <!-- Real Payment -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Real Payment</label>
+          <input type="number" step="0.01" name="real_payment" class="form-input w-full border-gray-300 rounded-md">
+        </div>
       </div>
 
       <!-- Remark -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Remark</label>
-        <textarea name="remark" rows="3" class="form-textarea w-full border-gray-300 rounded-md"></textarea>
+        <textarea name="remark" rows="1" class="form-textarea w-full border-gray-300 rounded-md"></textarea>
       </div>
 
       <div class="text-right">
         <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">Simpan</button>
       </div>
+
     </form>
   </div>
+
   @push('scripts')
     <script>
       document.addEventListener('DOMContentLoaded', function() {
@@ -116,6 +170,7 @@
             .then(data => {
               document.getElementById('customer_name').value = data.customer_name;
               document.getElementById('project_name').value = data.project_name;
+              document.getElementById('year').value = data.year;
               document.getElementById('po_number').value = data.nomor_po;
             });
         });

@@ -37,8 +37,12 @@ class ProjectController extends Controller
   public function show(Project $project, string $id_project)
   {
     $project = Project::where('id_project', $id_project)->firstOrFail();
-    // dd($id_project);
-    return response()->json($project);
+    return response()->json([
+      'customer_name' => $project->customer_name,
+      'project_name' => $project->project_name,
+      'nomor_po' => $project->nomor_po,
+      'year' => $project->created_at ? $project->created_at->format('Y') : null,
+    ]);
   }
 
   /**
