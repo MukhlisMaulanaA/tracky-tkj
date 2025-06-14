@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
   return view('welcome');
@@ -44,6 +45,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/{invoice}', [InvoiceController::class, 'update'])->name('update');
     Route::delete('/{invoice}', [InvoiceController::class, 'destroy'])->name('destroy');
   });
+
+  Route::get('/projects/{id_project}/detail', [ProjectController::class, 'show']);
+
 
   // Route::prefix('invoices')->name('invoices.')->group(function () {
   //   Route::get('/', [InvoiceController::class, 'index'])->name('index');

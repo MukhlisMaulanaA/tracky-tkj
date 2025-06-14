@@ -1,75 +1,125 @@
 @extends('layouts.dashboard')
-{{-- @import (asset('../resources/js/invoice-form.js')); --}}
-@push('styles')
-  <style>
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-
-      .print-area,
-      .print-area * {
-        visibility: visible;
-      }
-
-      .print-area {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-      }
-
-      button,
-      .no-print {
-        display: none !important;
-      }
-    }
-  </style>
-@endpush
 
 @section('content')
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8 px-4">
-    <div class="max-w-5xl mx-auto">
-      {{-- Header --}}
-      @include('invoice.partials.header')
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Buat Invoice Baru</h1>
 
-      {{-- Notifications --}}
-      @include('invoice.partials.notifications')
+    <form method="POST" action="{{ route('invoice.store') }}" class="bg-white shadow rounded-lg p-6 space-y-6">
+      @csrf
 
-      {{-- Progress Bar --}}
-      @include('invoice.partials.progress-bar')
-
-      {{-- Main Form Card --}}
-      <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
-          <h2 class="text-2xl font-semibold text-white flex items-center gap-3">
-            <x-icon name="file-text" class="w-6 h-6" />
-            Payment Information
-          </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- ID Project -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">ID Project</label>
+          <select id="id_project" name="id_project" class="form-select w-full border-gray-300 rounded-md" required>
+            <option value="">-- Pilih Project --</option>
+            @foreach ($projects as $project)
+              <option value="{{ $project->id_project }}">{{ $project->id_project }} - {{ $project->project_name }}
+              </option>
+            @endforeach
+          </select>
         </div>
 
-        <form id="payment-form" action="{{ route('invoice.store') }}" method="POST" class="p-8">
-          @csrf
+        <!-- Nama Customer -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nama Customer</label>
+          <input type="text" id="customer_name" name="customer_name"
+            class="form-input w-full border-gray-300 rounded-md" readonly>
+        </div>
 
-          {{-- Basic Information Section --}}
-          @include('invoice.partials.basic-info')
+        <!-- Nama Project -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nama Project</label>
+          <input type="text" id="project_name" name="project_name" class="form-input w-full border-gray-300 rounded-md"
+            readonly>
+        </div>
 
-          {{-- Remarks Section --}}
-          @include('invoice.partials.remarks')
+        <!-- Tahun -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
+          <input type="text" name="year" maxlength="4" class="form-input w-full border-gray-300 rounded-md"
+            required>
+        </div>
 
-          {{-- Financial Section --}}
-          @include('invoice.partials.financial-info')
+        <!-- Create Date -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Buat</label>
+          <input type="date" name="create_date" class="form-input w-full border-gray-300 rounded-md">
+        </div>
 
-          {{-- Action Buttons --}}
-          @include('invoice.partials.action-buttons')
-        </form>
+        <!-- Submit Date -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Submit</label>
+          <input type="date" name="submit_date" class="form-input w-full border-gray-300 rounded-md">
+        </div>
+
+        <!-- Date Payment -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Pembayaran</label>
+          <input type="date" name="date_payment" class="form-input w-full border-gray-300 rounded-md">
+        </div>
+
+        <!-- Nomor PO -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nomor PO</label>
+          <input type="text" id="po_number" name="po_number" class="form-input w-full border-gray-300 rounded-md">
+        </div>
+
+        <!-- Nomor Invoice -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Invoice</label>
+          <input type="text" name="invoice_number" class="form-input w-full border-gray-300 rounded-md">
+        </div>
+
+        <!-- Amount -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+          <input type="number" step="0.01" name="amount" class="form-input w-full border-gray-300 rounded-md"
+            required>
+        </div>
+
+        <!-- Denda -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Denda</label>
+          <input type="number" step="0.01" name="denda" class="form-input w-full border-gray-300 rounded-md">
+        </div>
       </div>
 
-      {{-- Footer --}}
-      @include('invoice.partials.footer')
-    </div>
+      <!-- Remark -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Remark</label>
+        <textarea name="remark" rows="3" class="form-textarea w-full border-gray-300 rounded-md"></textarea>
+      </div>
+
+      <div class="text-right">
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">Simpan</button>
+      </div>
+    </form>
   </div>
   @push('scripts')
-    <script src={{ mix('../resources/js/invoiceForm.js') }}></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Init Select2
+        $('#id_project').select2({
+          placeholder: '-- Pilih Project --',
+          allowClear: true,
+          width: '100%'
+        });
+
+        // Autofill logic
+        $('#id_project').on('change', function() {
+          const projectId = $(this).val();
+          if (!projectId) return;
+
+          fetch(`/projects/${projectId}/detail`)
+            .then(res => res.json())
+            .then(data => {
+              document.getElementById('customer_name').value = data.customer_name;
+              document.getElementById('project_name').value = data.project_name;
+              document.getElementById('po_number').value = data.nomor_po;
+            });
+        });
+      });
+    </script>
   @endpush
 @endsection

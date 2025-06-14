@@ -1,7 +1,10 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-  {{-- Sequential Number --}}
-  <x-form.input name="sequential_number" label="Sequential Number" icon="hash" required
-    placeholder="Enter sequential number" :value="old('sequential_number', $payment->sequential_number ?? '')" />
+  <select id="id_project" name="id_project" class="form-select" required>
+    <option value="">-- Pilih Project --</option>
+    @foreach ($projects as $project)
+      <option value="{{ $project->id_project }}">{{ $project->id_project }} - {{ $project->project_name }}</option>
+    @endforeach
+  </select>
 
   {{-- Year --}}
   <x-form.select name="year" label="Year" icon="calendar" required :options="$years" :value="old('year', $payment->year ?? date('Y'))" />

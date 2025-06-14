@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\InvoiceRequest;
+use App\Models\Project;
 use Yajra\DataTables\Facades\DataTables;
 
 class InvoiceController extends Controller
@@ -68,6 +69,8 @@ class InvoiceController extends Controller
    */
   public function create()
   {
+    $projects = Project::all();
+    // dd($projects);
     $years = collect(range(date('Y'), date('Y') - 9))
       ->mapWithKeys(fn($year) => [$year => $year])
       ->toArray();
@@ -89,7 +92,7 @@ class InvoiceController extends Controller
       'CV. Tech Partners'
     ];
 
-    return view('dashboard.invoice.create', compact('years', 'projectSuggestions', 'customerSuggestions'));
+    return view('dashboard.invoice.create', compact('years', 'projects', 'projectSuggestions', 'customerSuggestions'));
   }
 
   /**
