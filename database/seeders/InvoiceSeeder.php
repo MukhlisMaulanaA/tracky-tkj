@@ -16,6 +16,7 @@ class InvoiceSeeder extends Seeder
   {
     $data = [
       [
+        'id_project' => 'P25A001',
         'year' => 2025,
         'create_date' => Carbon::parse('2025-01-01'),
         'submit_date' => Carbon::parse('2025-01-01'),
@@ -31,6 +32,7 @@ class InvoiceSeeder extends Seeder
         'date_payment' => Carbon::parse('2025-01-17'),
       ],
       [
+        'id_project' => 'P25B002',
         'year' => 2025,
         'create_date' => Carbon::parse('2025-01-25'),
         'submit_date' => Carbon::parse('2025-01-25'),
@@ -46,6 +48,7 @@ class InvoiceSeeder extends Seeder
         'date_payment' => Carbon::parse('2025-05-02'),
       ],
       [
+        'id_project' => 'P25C003',
         'year' => 2025,
         'create_date' => Carbon::parse('2025-01-30'),
         'submit_date' => Carbon::parse('2025-01-30'),

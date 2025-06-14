@@ -45,22 +45,22 @@
         <table id="invoice-table" class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th>No</th>
-              <th>Tahun</th>
+              <th>No.</th>
+              <th>ID Project</th>
+              <th>Customer</th>
               <th>Project</th>
-              <th>Create Tanggal</th>
-              <th>Submit Tanggal</th>
-              <th>No PO</th>
-              <th>No Invoice</th>
-              <th>Remark</th>
-              <th>Costumer</th>
-              <th>Amount</th>
-              <th>VAT 11%</th>
-              <th>PPH 2%</th>
-              <th>Denda</th>
-              <th>Payment Net</th>
-              <th>Real Payment</th>
+              <th>Create Date</th>
+              <th>Submit Date</th>
               <th>Date Payment</th>
+              <th>PO Number</th>
+              <th>Invoice Number</th>
+              <th>Amount</th>
+              <th>PPN</th>
+              <th>PPH</th>
+              <th>Denda</th>
+              <th>Payment VAT</th>
+              <th>Real Payment</th>
+              <th>Remark</th>
             </tr>
           </thead>
         </table>
@@ -81,44 +81,63 @@
             }
           },
           columns: [{
-              data: 'no'
-            }, {
-              data: 'tahun'
-            }, {
-              data: 'project'
+              data: null,
+              name: 'no',
+              orderable: false,
+              searchable: false
             },
             {
-              data: 'create_tanggal'
-            }, {
-              data: 'submit_tanggal'
+              data: 'id_project'
             },
             {
-              data: 'no_po'
-            }, {
-              data: 'no_invoice'
-            }, {
-              data: 'remark'
+              data: 'project_name'
             },
             {
-              data: 'costumer'
-            }, {
+              data: 'customer_name'
+            },
+            {
+              data: 'create_date'
+            },
+            {
+              data: 'submit_date'
+            },
+            {
+              data: 'date_payment'
+            },
+            {
+              data: 'po_number'
+            },
+            {
+              data: 'invoice_number'
+            },
+            {
               data: 'amount'
-            }, {
+            },
+            {
               data: 'vat_11'
             },
             {
               data: 'pph_2'
-            }, {
+            },
+            {
               data: 'denda'
-            }, {
+            },
+            {
               data: 'payment_vat'
             },
             {
               data: 'real_payment'
-            }, {
-              data: 'date_payment'
             },
-          ]
+            {
+              data: 'remark'
+            },
+          ],
+          columnDefs: [{
+            targets: 0,
+            render: function(data, type, row, meta) {
+              return meta.row + meta.settings._iDisplayStart + 1;
+            }
+          }]
         });
         $('#filter-remark').change(function() {
           table.ajax.reload();

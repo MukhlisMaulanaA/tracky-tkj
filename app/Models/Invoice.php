@@ -40,6 +40,11 @@ class Invoice extends Model
     'real_payment' => 'decimal:2',
   ];
 
+  public function project()
+  {
+    return $this->belongsTo(Project::class, 'id_project', 'id_project');
+  }
+
   // Accessors for formatted currency display
   public function getFormattedAmountAttribute()
   {

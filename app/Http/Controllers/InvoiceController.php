@@ -17,7 +17,8 @@ class InvoiceController extends Controller
 
   public function datatable(Request $request)
   {
-    $query = Invoice::query();
+    $query = Invoice::with('project');
+
     if ($request->has('remark_filter') && $request->remark_filter !== '') {
       $keyword = strtoupper($request->remark_filter);
       if ($keyword === 'DONE') {
@@ -28,6 +29,7 @@ class InvoiceController extends Controller
         $query->whereRaw("UPPER(remark) LIKE 'PROCES PAYMENT%'");
       }
     }
+
     return DataTables::of($query)
       ->addColumn('remark', function ($row) {
         $text = strtoupper($row->remark ?? '');
@@ -44,17 +46,22 @@ class InvoiceController extends Controller
         return '<span class="inline-block px-2 py-1 rounded border text-xs font-semibold ' . $label . '">' .
           e($row->remark) . '</span>';
       })
+      ->addColumn('customer_name', fn($row) => $row->project->customer_name ?? '-')
+      ->addColumn('project_name', fn($row) => $row->project->project_name ?? '-')
+      ->addColumn('id_project', fn($row) => $row->project->id_project ?? '-')
       ->editColumn('amount', fn($row) => 'Rp' . number_format($row->amount, 0, ',', '.'))
       ->editColumn('vat_11', fn($row) => 'Rp' . number_format($row->vat_11, 0, ',', '.'))
       ->editColumn('pph_2', fn($row) => 'Rp' . number_format($row->pph_2, 0, ',', '.'))
+      ->editColumn('denda', fn($row) => 'Rp' . number_format($row->denda, 0, ',', '.'))
       ->editColumn('payment_vat', fn($row) => 'Rp' . number_format($row->payment_vat, 0, ',', '.'))
       ->editColumn('real_payment', fn($row) => 'Rp' . number_format($row->real_payment, 0, ',', '.'))
-      ->editColumn('create_tanggal', fn($row) => optional($row->create_tanggal)->format('d M Y'))
-      ->editColumn('submit_tanggal', fn($row) => optional($row->submit_tanggal)->format('d M Y'))
+      ->editColumn('create_date', fn($row) => optional($row->create_date)->format('d M Y'))
+      ->editColumn('submit_date', fn($row) => optional($row->submit_date)->format('d M Y'))
       ->editColumn('date_payment', fn($row) => optional($row->date_payment)->format('d M Y'))
-      ->rawColumns(['remark']) // Tampilkan HTML badge remark
+      ->rawColumns(['remark'])
       ->make(true);
   }
+
   /**
    * Display a listing of the resource.
    */
