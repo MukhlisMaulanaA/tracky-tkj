@@ -79,11 +79,22 @@ class InvoiceController extends Controller
               <div><strong>Payment:</strong> {$p}</div>
             </div>";
       })
+      ->addColumn('action', function ($row) {
+        $projectId = $row->project->id_project ?? null;
+
+        if (!$projectId)
+          return '-';
+
+        $url = route('invoices.show.project', ['project' => $projectId]);
+
+        return '<a href="' . $url . '" class="text-blue-600 hover:underline text-sm">Detail</a>';
+      })
       ->rawColumns([
         'remark',
         'date_details',
         'customer_name',
         'project_name',
+        'action',
       ])
       ->make(true);
   }
@@ -94,7 +105,7 @@ class InvoiceController extends Controller
   public function index(Request $request): View
   {
     $invoices = Invoice::all();
-    return view('dashboard.invoice.index', compact('invoices'));
+    return view('dashboard.invoices.index', compact('invoices'));
   }
 
   /**
@@ -125,7 +136,7 @@ class InvoiceController extends Controller
       'CV. Tech Partners'
     ];
 
-    return view('dashboard.invoice.create', compact('years', 'projects', 'projectSuggestions', 'customerSuggestions'));
+    return view('dashboard.invoices.create', compact('years', 'projects', 'projectSuggestions', 'customerSuggestions'));
   }
 
   /**
@@ -163,15 +174,26 @@ class InvoiceController extends Controller
       'real_payment' => $realPayment,
     ]);
 
-    return redirect()->route('invoice.index')->with('success', 'Invoice berhasil disimpan.');
+    return redirect()->route('invoices.index')->with('success', 'Invoice berhasil disimpan.');
   }
 
   /**
    * Display the specified resource.
    */
-  public function show(Invoice $invoice)
+  // public function show(Invoice $id_project)
+  // {
+  //   return view('invoices.show', compact('invoice'));
+
+  // }
+
+  public function showByProject($project)
   {
-    //
+    $invoice = Invoice::whereHas('project', function ($query) use ($project) {
+      $query->where('id_project', $project);
+    })->firstOrFail();
+    $invoice->load('project'); // call the relation
+
+    return view('dashboard.invoices.show', compact('invoice'));
   }
 
   /**

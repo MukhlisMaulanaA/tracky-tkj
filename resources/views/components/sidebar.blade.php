@@ -3,12 +3,12 @@
       ['name' => 'Dashboard', 'href' => route('index.dashboard'), 'icon' => 'layout-dashboard'],
       [
           'name' => 'Invoice Tracker',
-          'href' => route('invoice.index'),
+          'href' => route('invoices.index'),
           'icon' => 'file-text',
           'hasSubmenu' => true,
           'submenu' => [
-              ['name' => 'Tambah Invoice', 'href' => route('invoice.create'), 'icon' => 'plus'],
-              ['name' => 'Daftar Invoice', 'href' => route('invoice.index'), 'icon' => 'list'],
+              ['name' => 'Tambah Invoice', 'href' => route('invoices.create'), 'icon' => 'plus'],
+              ['name' => 'Daftar Invoice', 'href' => route('invoices.index'), 'icon' => 'list'],
           ],
       ],
       ['name' => 'Salary Tracker', 'href' => route('salaries.index'), 'icon' => 'dollar-sign'],

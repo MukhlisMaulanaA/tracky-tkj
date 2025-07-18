@@ -13,7 +13,7 @@ class ProjectSeeder extends Seeder
   {
     $projects = [
       [
-        'id_project' => 'P25A001',
+        'id_project' => 'P25A005',
         'customer_name' => 'PT Alpha Teknologi',
         'tanggal_submit' => '2025-01-05',
         'tanggal_breifing' => '2025-01-07',
@@ -25,7 +25,7 @@ class ProjectSeeder extends Seeder
         'updated_at' => now(),
       ],
       [
-        'id_project' => 'P25B002',
+        'id_project' => 'P25B022',
         'customer_name' => 'CV Beta Jaya',
         'tanggal_submit' => '2025-02-10',
         'tanggal_breifing' => '2025-02-12',
@@ -37,7 +37,7 @@ class ProjectSeeder extends Seeder
         'updated_at' => now(),
       ],
       [
-        'id_project' => 'P25C003',
+        'id_project' => 'P25C013',
         'customer_name' => 'PT Gamma Nusantara',
         'tanggal_submit' => '2025-03-15',
         'tanggal_breifing' => '2025-03-18',

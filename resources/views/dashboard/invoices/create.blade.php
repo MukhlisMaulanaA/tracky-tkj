@@ -10,7 +10,7 @@
         <p class="text-sm text-gray-600">Lengkapi informasi berikut untuk membuat invoice</p>
       </div>
 
-      <form method="POST" action="{{ route('invoice.store') }}" class="space-y-8">
+      <form method="POST" action="{{ route('invoices.store') }}" class="space-y-8">
         @csrf
 
         <!-- Main Form Container -->

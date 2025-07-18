@@ -59,6 +59,7 @@
               <th class="px-4 py-2 w-28">Payment VAT</th>
               <th class="px-4 py-2 w-28">Real Payment</th>
               <th>Remark</th>
+              <th>Action</th>
             </tr>
           </thead>
         </table>
@@ -124,6 +125,9 @@
             },
             {
               data: 'remark'
+            },
+            {
+              data: 'action'
             },
           ],
           columnDefs: [{
