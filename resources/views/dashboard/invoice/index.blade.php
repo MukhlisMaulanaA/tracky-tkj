@@ -49,17 +49,15 @@
               <th>ID Project</th>
               <th>Customer</th>
               <th>Project</th>
-              <th>Create Date</th>
-              <th>Submit Date</th>
-              <th>Date Payment</th>
+              <th class="px-4 py-2 w-44">Date Details</th>
               <th>PO Number</th>
               <th>Invoice Number</th>
-              <th>Amount</th>
-              <th>PPN</th>
-              <th>PPH</th>
-              <th>Denda</th>
-              <th>Payment VAT</th>
-              <th>Real Payment</th>
+              <th class="px-4 py-2 w-24">Amount</th>
+              <th class="px-4 py-2 w-24">PPN</th>
+              <th class="px-4 py-2 w-24">PPH</th>
+              <th class="px-4 py-2 w-24">Denda</th>
+              <th class="px-4 py-2 w-28">Payment VAT</th>
+              <th class="px-4 py-2 w-28">Real Payment</th>
               <th>Remark</th>
             </tr>
           </thead>
@@ -96,14 +94,10 @@
               data: 'customer_name'
             },
             {
-              data: 'create_date'
+              data: 'date_details',
+              name: 'date_details'
             },
-            {
-              data: 'submit_date'
-            },
-            {
-              data: 'date_payment'
-            },
+
             {
               data: 'po_number'
             },
@@ -137,12 +131,29 @@
             render: function(data, type, row, meta) {
               return meta.row + meta.settings._iDisplayStart + 1;
             }
-          }]
+          }],
+          createdRow: function(row, data, dataIndex) {
+            $(row).addClass('text-sm');
+          },
         });
         $('#filter-remark').change(function() {
           table.ajax.reload();
         });
       });
     </script>
+  @endpush
+  @push('styles')
+    <style>
+      table#invoice-table th,
+      table#invoice-table td {
+        vertical-align: top;
+        /* white-space: normal !important; */
+      }
+
+      table#invoice-table td {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+      }
+    </style>
   @endpush
 @endsection

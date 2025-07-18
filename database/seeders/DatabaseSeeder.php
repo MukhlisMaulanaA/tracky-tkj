@@ -16,8 +16,8 @@ class DatabaseSeeder extends Seeder
     // User::factory(10)->create();
 
     User::factory(1)->create();
-    // $this->call(InvoiceSeeder::class);
-    // $this->call(ProjectSeeder::class);
+    $this->call(InvoiceSeeder::class);
+    $this->call(ProjectSeeder::class);
 
 
   }

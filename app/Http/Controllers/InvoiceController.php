@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
+use App\Models\Project;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\InvoiceRequest;
-use App\Models\Project;
 use Yajra\DataTables\Facades\DataTables;
 
 class InvoiceController extends Controller
@@ -55,10 +56,18 @@ class InvoiceController extends Controller
       ->editColumn('denda', fn($row) => 'Rp' . number_format($row->denda, 0, ',', '.'))
       ->editColumn('payment_vat', fn($row) => 'Rp' . number_format($row->payment_vat, 0, ',', '.'))
       ->editColumn('real_payment', fn($row) => 'Rp' . number_format($row->real_payment, 0, ',', '.'))
-      ->editColumn('create_date', fn($row) => optional($row->create_date)->format('d M Y'))
-      ->editColumn('submit_date', fn($row) => optional($row->submit_date)->format('d M Y'))
-      ->editColumn('date_payment', fn($row) => optional($row->date_payment)->format('d M Y'))
-      ->rawColumns(['remark'])
+      ->addColumn('date_details', function ($row) {
+        $c = $row->create_date ? Carbon::parse($row->create_date)->translatedFormat('d F Y') : '-';
+        $s = $row->submit_date ? Carbon::parse($row->submit_date)->translatedFormat('d F Y') : '-';
+        $p = $row->date_payment ? Carbon::parse($row->date_payment)->translatedFormat('d F Y') : '-';
+
+        return "<div class='text-sm leading-5 w-44'>
+              <div><strong>Create:</strong> {$c}</div>
+              <div><strong>Submit:</strong> {$s}</div>
+              <div><strong>Payment:</strong> {$p}</div>
+            </div>";
+      })
+      ->rawColumns(['remark', 'date_details'])
       ->make(true);
   }
 
@@ -107,60 +116,37 @@ class InvoiceController extends Controller
    */
   public function store(InvoiceRequest $request)
   {
-    DB::beginTransaction();
+    // Bersihkan nilai rupiah ke angka
+    $amount = (float) str_replace(',', '', $request->amount);
+    $pphPercent = (float) $request->pph_percent;
+    $denda = $request->denda ? (float) str_replace(',', '', $request->denda) : 0;
 
-    try {
-      $invoice = Invoice::create([
-        'sequential_number' => $request->sequential_number,
-        'year' => $request->year,
-        'project_name' => $request->project_name,
-        'create_date' => $request->create_date,
-        'submit_date' => $request->submit_date,
-        'date_payment' => $request->date_payment,
-        'po_number' => $request->po_number,
-        'invoice_number' => $request->invoice_number,
-        'remark' => $request->remark,
-        'customer_name' => $request->customer_name,
-        'amount' => $this->parseCurrency($request->amount),
-        'vat_11' => $this->parseCurrency($request->vat_11),
-        'pph_2' => $this->parseCurrency($request->pph_2),
-        'fine' => $this->parseCurrency($request->fine),
-        'payment_vat' => $this->parseCurrency($request->payment_vat),
-        'real_payment' => $this->parseCurrency($request->real_payment),
-      ]);
+    // Hitung nilai-nilai
+    $vat = round($amount * 0.11);
+    $pph = round($amount * ($pphPercent / 100));
+    $paymentVat = $amount + $vat;
+    $realPayment = $amount - $pph - $denda;
 
-      DB::commit();
+    // dd($request->id_project);
 
-      // Always return JSON for AJAX requests
-      if ($request->expectsJson() || $request->ajax()) {
-        return response()->json([
-          'success' => true,
-          'message' => 'Payment form submitted successfully!',
-          'redirect' => route('invoice.show', $invoice->id)
-        ]);
-      }
+    Invoice::create([
+      'id_project' => $request->id_project,
+      'year' => $request->year,
+      'create_date' => $request->create_date,
+      'submit_date' => $request->submit_date,
+      'date_payment' => $request->date_payment,
+      'po_number' => $request->po_number,
+      'invoice_number' => $request->invoice_number,
+      'remark' => $request->remark,
+      'amount' => $amount,
+      'vat_11' => $vat,
+      'pph_2' => $pph,
+      'denda' => $denda,
+      'payment_vat' => $paymentVat,
+      'real_payment' => $realPayment,
+    ]);
 
-      return redirect()
-        ->route('invoice.show', $invoice)
-        ->with('success', 'Payment form submitted successfully!');
-
-    } catch (\Exception $e) {
-      DB::rollBack();
-
-      Log::error('Payment creation failed: ' . $e->getMessage());
-
-      if ($request->expectsJson() || $request->ajax()) {
-        return response()->json([
-          'success' => false,
-          'message' => 'An error occurred while saving the payment.',
-          'error' => config('app.debug') ? $e->getMessage() : null
-        ], 500);
-      }
-
-      return back()
-        ->withInput()
-        ->with('error', 'An error occurred while saving the payment.');
-    }
+    return redirect()->route('invoice.index')->with('success', 'Invoice berhasil disimpan.');
   }
 
   /**
