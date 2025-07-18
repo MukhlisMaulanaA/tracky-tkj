@@ -47,9 +47,21 @@ class InvoiceController extends Controller
         return '<span class="inline-block px-2 py-1 rounded border text-xs font-semibold ' . $label . '">' .
           e($row->remark) . '</span>';
       })
-      ->addColumn('customer_name', fn($row) => $row->project->customer_name ?? '-')
-      ->addColumn('project_name', fn($row) => $row->project->project_name ?? '-')
       ->addColumn('id_project', fn($row) => $row->project->id_project ?? '-')
+      ->addColumn(
+        'customer_name',
+        function ($row) {
+          $customerName = $row->project->customer_name ?? '-';
+          return "<div style='min-width: 180px; white-space: normal;'>{$customerName}</div>";
+        }
+      )
+      ->addColumn(
+        'project_name',
+        function ($row) {
+          $projectName = $row->project->project_name ?? '-';
+          return "<div style='min-width: 200px; white-space: normal;'>{$projectName}</div>";
+        }
+      )
       ->editColumn('amount', fn($row) => 'Rp' . number_format($row->amount, 0, ',', '.'))
       ->editColumn('vat_11', fn($row) => 'Rp' . number_format($row->vat_11, 0, ',', '.'))
       ->editColumn('pph_2', fn($row) => 'Rp' . number_format($row->pph_2, 0, ',', '.'))
@@ -67,7 +79,12 @@ class InvoiceController extends Controller
               <div><strong>Payment:</strong> {$p}</div>
             </div>";
       })
-      ->rawColumns(['remark', 'date_details'])
+      ->rawColumns([
+        'remark',
+        'date_details',
+        'customer_name',
+        'project_name',
+      ])
       ->make(true);
   }
 

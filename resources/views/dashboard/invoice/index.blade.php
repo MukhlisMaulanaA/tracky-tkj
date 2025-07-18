@@ -47,8 +47,8 @@
             <tr>
               <th>No.</th>
               <th>ID Project</th>
-              <th>Customer</th>
               <th>Project</th>
+              <th>Customer</th>
               <th class="px-4 py-2 w-44">Date Details</th>
               <th>PO Number</th>
               <th>Invoice Number</th>
@@ -88,7 +88,7 @@
               data: 'id_project'
             },
             {
-              data: 'project_name'
+              data: 'project_name',
             },
             {
               data: 'customer_name'
