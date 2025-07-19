@@ -70,31 +70,37 @@
 
         <!-- Invoice Dates -->
         <div class="bg-gray-50 p-4 rounded-md">
-          <h3 class="font-semibold text-gray-700 mb-3">Invoice Details</h3>
+          <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <x-icon name="calendar" class="w-5 h-5 mr-2 text-purple-600"></x-icon>
+            Invoice Details
+          </h2>
           <div>
             <label class="text-sm font-medium text-gray-500">No</label>
             <p class="text-lg font-semibold text-gray-900">{{ $invoice->invoice_number ?? '-' }}</p>
           </div>
           <div>
             <label class="text-sm font-medium text-gray-500">Creation Date</label>
-            <p class="text-lg font-semibold text-gray-900">{{ $invoice->create_date ?? '-' }}</p>
+            <p class="text-lg font-semibold text-gray-900">{{ $createDate ?? '-' }}</p>
           </div>
           <div>
             <label class="text-sm font-medium text-gray-500">Submission</label>
-            <p class="text-lg font-semibold text-gray-900">{{ $invoice->submit_date ?? '-' }}</p>
+            <p class="text-lg font-semibold text-gray-900">{{ $submitDate ?? '-' }}</p>
           </div>
         </div>
 
         <!-- Payment Info -->
         <div class="bg-gray-50 p-4 rounded-md">
-          <h3 class="font-semibold text-gray-700 mb-3">Payment</h3>
+          <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <x-icon name="receipt" class="w-5 h-5 mr-2 text-green-600"></x-icon>
+            Payment Information
+          </h2>
           <div>
             <label class="text-sm font-medium text-gray-500">Status</label>
             <p class="text-lg font-semibold text-gray-900">{{ $invoice->remark ?? '-' }}</p>
           </div>
           <div>
             <label class="text-sm font-medium text-gray-500">Payment Date</label>
-            <p class="text-lg font-semibold text-gray-900">{{ $invoice->date_payment ?? '-' }}</p>
+            <p class="text-lg font-semibold text-gray-900">{{ $paymentDate ?? '-' }}</p>
           </div>
         </div>
       </div>
@@ -121,12 +127,16 @@
               <span
                 class="font-semibold">{{ $invoice->denda ? 'Rp' . number_format($invoice->denda, 0, ',', '.') : 'Tidak Ada' }}</span>
             </div>
+            <div class="border-t border-gray-300 pt-3">
+              <div class="flex justify-between items-center"><span class="text-gray-700 font-medium">Payment with
+                  VAT</span><span class="text-xl font-bold text-blue-600">Rp{{ number_format($invoice->payment_vat, 0, ',', '.') }}</span></div>
+            </div>
           </div>
           <div class="p-4 bg-white border rounded-md text-center">
             <p class="text-gray-600 text-sm mb-2">Final Payment</p>
             <p class="text-3xl font-bold text-green-600 mb-1">Rp{{ number_format($invoice->real_payment, 0, ',', '.') }}
             </p>
-            <p class="text-sm text-gray-500">Paid on {{ $invoice->date_payment }}</p>
+            <p class="text-sm text-gray-500">Paid on {{ $paymentDate }}</p>
           </div>
         </div>
       </div>

@@ -191,9 +191,12 @@ class InvoiceController extends Controller
     $invoice = Invoice::whereHas('project', function ($query) use ($project) {
       $query->where('id_project', $project);
     })->firstOrFail();
+    $createDate = Carbon::parse($invoice->create_date)->translatedFormat('d F Y');
+    $submitDate = Carbon::parse($invoice->submit_date)->translatedFormat('d F Y');
+    $paymentDate = Carbon::parse($invoice->date_payment)->translatedFormat('d F Y');
     $invoice->load('project'); // call the relation
 
-    return view('dashboard.invoices.show', compact('invoice'));
+    return view('dashboard.invoices.show', compact('invoice', 'createDate', 'submitDate', 'paymentDate'));
   }
 
   /**
