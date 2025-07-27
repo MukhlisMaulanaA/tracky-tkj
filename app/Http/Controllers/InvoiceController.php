@@ -81,13 +81,36 @@ class InvoiceController extends Controller
       })
       ->addColumn('action', function ($row) {
         $projectId = $row->project->id_project ?? null;
+        $invoiceId = $row->id;
 
         if (!$projectId)
           return '-';
 
-        $url = route('invoices.show.project', ['project' => $projectId]);
+        $showUrl = route('invoices.show.project', ['project' => $projectId]);
+        $editUrl = route('invoices.edit', $invoiceId);
+        $deleteUrl = route('invoices.destroy', $invoiceId);
 
-        return '<a href="' . $url . '" class="text-blue-600 hover:underline text-sm">Detail</a>';
+        return '
+        <div class="flex items-center space-x-3">
+          <a href="' . $showUrl . '" title="Lihat Detail" class="bg-blue-50 p-1 rounded">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M9 12h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2h-6.586A2 2 0 008.586 4L6 6.586A2 2 0 004 8.586V17a2 2 0 002 2h8a2 2 0 002-2v-3" />
+            </svg>
+          </a>
+          <a href="' . $editUrl . '" title="Edit Invoice" class="bg-green-50 p-1 rounded">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M15.232 5.232l3.536 3.536M9 11l6-6 3.536 3.536-6 6H9v-3.536z" />
+            </svg>
+          </a>
+          <form action="' . $deleteUrl . '" method="POST" onsubmit="return confirm(\'Hapus invoice ini?\')" class="bg-red-50 p-1 rounded inline">
+            ' . csrf_field() . method_field('DELETE') . '
+            <button type="submit" title="Hapus Invoice">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </form>
+        </div>';
       })
       ->rawColumns([
         'remark',
