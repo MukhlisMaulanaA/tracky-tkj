@@ -336,7 +336,7 @@
 
         // Auto-calculate VAT and PPH
         const amountField = document.querySelector('input[name="amount"]');
-        constvatField = document.querySelector('input[name="vat_11"]');
+        const vatField = document.querySelector('input[name="vat_11"]');
         const pphField = document.querySelector('input[name="pph_2"]');
 
         if (amountField) {
@@ -387,10 +387,11 @@
 
       function hitungOtomatis() {
         const amount = parseNumber(document.querySelector('[name="amount"]').value);
+        const vatPercent = parseNumber(document.querySelector('[name="vat_percent"]').value)
         const pphPercent = parseNumber(document.querySelector('[name="pph_percent"]').value);
         const denda = parseNumber(document.querySelector('[name="denda"]').value);
 
-        const vat = Math.round(amount * 0.11);
+        const vat = Math.round(amount * (vatPercent / 100));
         const pph = Math.round(amount * (pphPercent / 100));
         const paymentVat = amount + vat;
         const realPayment = amount - pph - (denda || 0);

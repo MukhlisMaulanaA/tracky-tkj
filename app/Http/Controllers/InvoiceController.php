@@ -227,6 +227,7 @@ class InvoiceController extends Controller
    */
   public function edit(Invoice $invoice)
   {
+    $projects = Project::all();
     $years = collect(range(date('Y'), date('Y') - 9))
       ->mapWithKeys(fn($year) => [$year => $year])
       ->toArray();
@@ -247,8 +248,9 @@ class InvoiceController extends Controller
       'PT. Smart Industries',
       'CV. Tech Partners'
     ];
+    // dd($invoice->id_project);
 
-    return view('payment.form', compact('invoice', 'years', 'projectSuggestions', 'customerSuggestions'));
+    return view('dashboard.invoices.edit', compact('invoice', 'projects', 'years', 'projectSuggestions', 'customerSuggestions'));
   }
 
   /**
@@ -256,56 +258,35 @@ class InvoiceController extends Controller
    */
   public function update(InvoiceRequest $request, Invoice $invoice)
   {
-    DB::beginTransaction();
+    // Bersihkan nilai rupiah ke angka
+    $amount = (float) str_replace(',', '', $request->amount);
+    $pphPercent = (float) $request->pph_percent;
+    $denda = $request->denda ? (float) str_replace(',', '', $request->denda) : 0;
 
-    try {
-      $invoice->update([
-        'sequential_number' => $request->sequential_number,
-        'year' => $request->year,
-        'project_name' => $request->project_name,
-        'create_date' => $request->create_date,
-        'submit_date' => $request->submit_date,
-        'date_payment' => $request->date_payment,
-        'po_number' => $request->po_number,
-        'invoice_number' => $request->invoice_number,
-        'remark' => $request->remark,
-        'customer_name' => $request->customer_name,
-        'amount' => $this->parseCurrency($request->amount),
-        'vat_11' => $this->parseCurrency($request->vat_11),
-        'pph_2' => $this->parseCurrency($request->pph_2),
-        'fine' => $this->parseCurrency($request->fine),
-        'payment_vat' => $this->parseCurrency($request->payment_vat),
-        'real_payment' => $this->parseCurrency($request->real_payment),
-      ]);
+    // Hitung ulang
+    $vat = round($amount * 0.11);
+    $pph = round($amount * ($pphPercent / 100));
+    $paymentVat = $amount + $vat;
+    $realPayment = $amount - $pph - $denda;
 
-      DB::commit();
+    $invoice->update([
+      'id_project' => $request->id_project,
+      'year' => $request->year,
+      'create_date' => $request->create_date,
+      'submit_date' => $request->submit_date,
+      'date_payment' => $request->date_payment,
+      'po_number' => $request->po_number,
+      'invoice_number' => $request->invoice_number,
+      'remark' => $request->remark,
+      'amount' => $amount,
+      'vat_11' => $vat,
+      'pph_2' => $pph,
+      'denda' => $denda,
+      'payment_vat' => $paymentVat,
+      'real_payment' => $realPayment,
+    ]);
 
-      if ($request->ajax()) {
-        return response()->json([
-          'success' => true,
-          'message' => 'Payment updated successfully!',
-          'redirect' => route('payment.show', $invoice)
-        ]);
-      }
-
-      return redirect()
-        ->route('payment.show', $invoice)
-        ->with('success', 'Payment updated successfully!');
-
-    } catch (\Exception $e) {
-      DB::rollBack();
-
-      if ($request->ajax()) {
-        return response()->json([
-          'success' => false,
-          'message' => 'An error occurred while updating the payment.'
-        ], 500);
-      }
-
-      return back()
-        ->withInput()
-        ->with('error', 'An error occurred while updating the payment.');
-    }
+    return redirect()->route('invoices.index')->with('success', 'Invoice berhasil diperbarui.');
   }
 
   /**
