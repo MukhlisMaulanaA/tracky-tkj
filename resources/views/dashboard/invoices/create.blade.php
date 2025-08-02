@@ -191,9 +191,36 @@
           <!-- Remark -->
           <div class="p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Catatan</h3>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Payment Status</label>
+              <div class="flex space-x-2" id="remark-group">
+                <label class="cursor-pointer">
+                  <input type="radio" name="remarks" value="DONE PAYMENT" class="hidden">
+                  <span data-value="DONE PAYMENT"
+                    class="remark-button inline-block px-4 py-2 rounded-full text-sm font-medium border bg-gray-100 text-gray-700 border-gray-300">
+                    DONE
+                  </span>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="remarks" value="PROCES PAYMENT" class="hidden">
+                  <span data-value="PROCES PAYMENT"
+                    class="remark-button inline-block px-4 py-2 rounded-full text-sm font-medium border bg-gray-100 text-gray-700 border-gray-300">
+                    PROCES
+                  </span>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="remarks" value="WAITING PAYMENT" class="hidden">
+                  <span data-value="WAITING PAYMENT"
+                    class="remark-button inline-block px-4 py-2 rounded-full text-sm font-medium border bg-gray-100 text-gray-700 border-gray-300">
+                    WAITING
+                  </span>
+                </label>
+              </div>
+            </div>
+
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Remark</label>
-              <textarea name="remark" rows="3"
+              <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+              <textarea name="notes" rows="3"
                 class="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
                 placeholder="Tambahkan catatan atau keterangan tambahan..."></textarea>
             </div>
@@ -410,6 +437,41 @@
           const input = document.querySelector(`[name="${id}"]`);
           input.addEventListener('input', hitungOtomatis);
         });
+      });
+
+      // interactive buttone
+      document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.remark-button');
+
+        buttons.forEach(button => {
+          button.addEventListener('click', () => {
+            // Reset semua ke default (abu)
+            buttons.forEach(btn => {
+              btn.classList.remove('bg-green-100', 'text-green-800', 'border-green-300');
+              btn.classList.remove('bg-yellow-100', 'text-yellow-800', 'border-yellow-300');
+              btn.classList.remove('bg-red-100', 'text-red-800', 'border-red-300');
+              btn.classList.add('bg-gray-100', 'text-gray-700', 'border-gray-300');
+            });
+
+            // Tandai sebagai terpilih
+            const val = button.getAttribute('data-value');
+            button.previousElementSibling.checked = true;
+
+            if (val === 'DONE PAYMENT') {
+              button.classList.remove('bg-gray-100', 'text-gray-700', 'border-gray-300');
+              button.classList.add('bg-green-100', 'text-green-800', 'border-green-300');
+            } else if (val === 'PROCES PAYMENT') {
+              button.classList.remove('bg-gray-100', 'text-gray-700', 'border-gray-300');
+              button.classList.add('bg-yellow-100', 'text-yellow-800', 'border-yellow-300');
+            } else if (val === 'WAITING PAYMENT') {
+              button.classList.remove('bg-gray-100', 'text-gray-700', 'border-gray-300');
+              button.classList.add('bg-red-100', 'text-red-800', 'border-red-300');
+            }
+          });
+        });
+
+        // Trigger default button
+        document.querySelector('.remark-button[data-value="DONE PAYMENT"]').click();
       });
     </script>
   @endpush

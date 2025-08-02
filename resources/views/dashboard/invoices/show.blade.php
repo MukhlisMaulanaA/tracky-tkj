@@ -48,20 +48,20 @@
             <x-icon name="file-text" class="w-5 h-5 mr-2 text-blue-600"></x-icon>
             Project Information
           </h2>
-          <div>
-            <label class="text-lg font-medium text-gray-500">Project ID</label>
+          <div class="mb-2">
+            <label class="text-md font-medium text-gray-500">Project ID</label>
             <p class="text-lg font-semibold text-gray-900">{{ $invoice->project->id_project ?? '-' }}</p>
           </div>
-          <div>
-            <label class="text-lg font-medium text-gray-500">Customer</label>
+          <div class="mb-2">
+            <label class="text-md font-medium text-gray-500">Customer</label>
             <p class="text-lg font-semibold text-gray-900">{{ $invoice->project->customer_name ?? '-' }}</p>
           </div>
-          <div>
-            <label class="text-lg font-medium text-gray-500">Project</label>
+          <div class="mb-2">
+            <label class="text-md font-medium text-gray-500">Project</label>
             <p class="text-lg font-semibold text-gray-900">{{ $invoice->project->project_name ?? '-' }}</p>
           </div>
-          <div>
-            <label class="text-lg font-medium text-gray-500">PO Number</label>
+          <div class="mb-2">
+            <label class="text-md font-medium text-gray-500">PO Number</label>
             <p class="text-lg font-semibold text-gray-900">{{ $invoice->project->po_number ?? '-' }}</p>
           </div>
         </div>
@@ -72,16 +72,16 @@
             <x-icon name="calendar" class="w-5 h-5 mr-2 text-purple-600"></x-icon>
             Invoice Details
           </h2>
-          <div>
-            <label class="text-lg font-medium text-gray-500">No</label>
+          <div class="mb-2">
+            <label class="text-md font-medium text-gray-500">No</label>
             <p class="text-lg font-semibold text-gray-900">{{ $invoice->invoice_number ?? '-' }}</p>
           </div>
-          <div>
-            <label class="text-lg font-medium text-gray-500">Creation Date</label>
+          <div class="mb-2">
+            <label class="text-md font-medium text-gray-500">Creation Date</label>
             <p class="text-lg font-semibold text-gray-900">{{ $createDate ?? '-' }}</p>
           </div>
-          <div>
-            <label class="text-lg font-medium text-gray-500">Submission</label>
+          <div class="mb-2">
+            <label class="text-md font-medium text-gray-500">Submission</label>
             <p class="text-lg font-semibold text-gray-900">{{ $submitDate ?? '-' }}</p>
           </div>
         </div>
@@ -92,16 +92,16 @@
             <x-icon name="receipt" class="w-5 h-5 mr-2 text-green-600"></x-icon>
             Payment Information
           </h2>
-          <div>
-            <label class="text-lg font-medium text-gray-500">Status</label>
+          <div class="mb-2">
+            <label class="text-md font-medium text-gray-500">Status</label>
             <p class="text-lg font-semibold text-gray-900">{{ $invoice->remarks ?? '-' }}</p>
           </div>
-          <div>
-            <label class="text-lg font-medium text-gray-500">Payment Date</label>
+          <div class="mb-2">
+            <label class="text-md font-medium text-gray-500">Payment Date</label>
             <p class="text-lg font-semibold text-gray-900">{{ $paymentDate ?? '-' }}</p>
           </div>
-          <div>
-            <label class="text-lg font-medium text-gray-500">Notes</label>
+          <div class="mb-2">
+            <label class="text-md font-medium text-gray-500">Notes</label>
             <p class="text-lg font-semibold text-gray-900">{{ $invoice->notes ?? '-' }}</p>
           </div>
         </div>
