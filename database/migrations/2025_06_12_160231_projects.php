@@ -13,11 +13,12 @@ return new class extends Migration
       $table->string('id_project', 20)->unique(); // Format: PYYYYMXXX
       $table->string('customer_name');
       $table->date('tanggal_submit');
-      $table->date('tanggal_breifing');
+      $table->date('tanggal_briefing');
       $table->string('project_name');
       $table->string('nomor_po')->nullable();
       $table->date('deadline')->nullable();
-      $table->enum('remarks', ['Yes', 'Pending', 'No']);
+      $table->enum('remarks', ['Approved', 'On Progress', 'Pending', 'Cancel']);
+      $table->text('notes')->nullable();
       $table->timestamps();
     });
   }

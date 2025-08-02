@@ -16,10 +16,11 @@ return new class extends Migration {
       $table->date('date_payment')->nullable();
       $table->string('po_number')->nullable();
       $table->string('invoice_number')->nullable();
-      $table->text('remark')->nullable();
+      $table->enum('remarks', ['DONE PAYMENT', 'WAITING PAYMENT', 'PROCES PAYMENT']);
+      $table->text('notes')->nullable();
       $table->decimal('amount', 15, 2);
-      $table->decimal('vat_11', 15, 2)->nullable();
-      $table->decimal('pph_2', 15, 2)->nullable();
+      $table->decimal('vat', 15, 2)->nullable();
+      $table->decimal('pph', 15, 2)->nullable();
       $table->decimal('denda', 15, 2)->nullable();
       $table->decimal('payment_vat', 15, 2)->nullable();
       $table->decimal('real_payment', 15, 2)->nullable();

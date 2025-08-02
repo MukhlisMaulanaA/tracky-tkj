@@ -10,11 +10,12 @@ class Project extends Model
     'id_project',
     'customer_name',
     'tanggal_submit',
-    'tanggal_breifing',
+    'tanggal_briefing',
     'project_name',
     'nomor_po',
     'deadline',
     'remarks',
+    'notes',
   ];
 
   // Non-incrementing primary key (optional)

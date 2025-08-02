@@ -32,8 +32,8 @@ class InvoiceController extends Controller
     }
 
     return DataTables::of($query)
-      ->addColumn('remark', function ($row) {
-        $text = strtoupper($row->remark ?? '');
+      ->addColumn('remarks', function ($row) {
+        $text = strtoupper($row->remarks ?? '');
         $label = 'bg-gray-100 text-gray-700 border-gray-300'; // default
   
         if ($text === 'DONE PAYMENT') {
@@ -45,7 +45,7 @@ class InvoiceController extends Controller
         }
 
         return '<span class="inline-block px-2 py-1 rounded border text-xs font-semibold ' . $label . '">' .
-          e($row->remark) . '</span>';
+          e($row->remarks) . '</span>';
       })
       ->addColumn('id_project', fn($row) => $row->project->id_project ?? '-')
       ->addColumn(
@@ -63,8 +63,8 @@ class InvoiceController extends Controller
         }
       )
       ->editColumn('amount', fn($row) => 'Rp' . number_format($row->amount, 0, ',', '.'))
-      ->editColumn('vat_11', fn($row) => 'Rp' . number_format($row->vat_11, 0, ',', '.'))
-      ->editColumn('pph_2', fn($row) => 'Rp' . number_format($row->pph_2, 0, ',', '.'))
+      ->editColumn('vat', fn($row) => 'Rp' . number_format($row->vat, 0, ',', '.'))
+      ->editColumn('pph', fn($row) => 'Rp' . number_format($row->pph, 0, ',', '.'))
       ->editColumn('denda', fn($row) => 'Rp' . number_format($row->denda, 0, ',', '.'))
       ->editColumn('payment_vat', fn($row) => 'Rp' . number_format($row->payment_vat, 0, ',', '.'))
       ->editColumn('real_payment', fn($row) => 'Rp' . number_format($row->real_payment, 0, ',', '.'))
@@ -113,7 +113,7 @@ class InvoiceController extends Controller
         </div>';
       })
       ->rawColumns([
-        'remark',
+        'remarks',
         'date_details',
         'customer_name',
         'project_name',
@@ -190,8 +190,8 @@ class InvoiceController extends Controller
       'invoice_number' => $request->invoice_number,
       'remark' => $request->remark,
       'amount' => $amount,
-      'vat_11' => $vat,
-      'pph_2' => $pph,
+      'vat' => $vat,
+      'pph' => $pph,
       'denda' => $denda,
       'payment_vat' => $paymentVat,
       'real_payment' => $realPayment,
@@ -214,13 +214,27 @@ class InvoiceController extends Controller
     $invoice = Invoice::whereHas('project', function ($query) use ($project) {
       $query->where('id_project', $project);
     })->firstOrFail();
+
+    $invoice->load('project'); // Call relation
+
     $createDate = Carbon::parse($invoice->create_date)->translatedFormat('d F Y');
     $submitDate = Carbon::parse($invoice->submit_date)->translatedFormat('d F Y');
     $paymentDate = Carbon::parse($invoice->date_payment)->translatedFormat('d F Y');
-    $invoice->load('project'); // call the relation
+
+    // Generate badge HTML
+    $remark = strtoupper($invoice->remarks);
+    $badgeClass = match (true) {
+      $remark === 'DONE PAYMENT' => 'bg-green-100 text-green-800',
+      str_starts_with($remark, 'PROCES PAYMENT') => 'bg-yellow-100 text-yellow-800',
+      str_starts_with($remark, 'WAITING PAYMENT') => 'bg-red-100 text-red-800',
+      default => 'bg-gray-100 text-gray-800',
+    };
+
+    $invoice->remark_badge = "<span class='px-3 py-1 rounded-full text-sm font-medium {$badgeClass}'>{$invoice->remarks}</span>";
 
     return view('dashboard.invoices.show', compact('invoice', 'createDate', 'submitDate', 'paymentDate'));
   }
+
 
   /**
    * Show the form for editing the specified resource.

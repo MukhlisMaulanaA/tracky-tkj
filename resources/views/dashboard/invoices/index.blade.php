@@ -109,10 +109,10 @@
               data: 'amount'
             },
             {
-              data: 'vat_11'
+              data: 'vat'
             },
             {
-              data: 'pph_2'
+              data: 'pph'
             },
             {
               data: 'denda'
@@ -124,7 +124,7 @@
               data: 'real_payment'
             },
             {
-              data: 'remark'
+              data: 'remarks'
             },
             {
               data: 'action'

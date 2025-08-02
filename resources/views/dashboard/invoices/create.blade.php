@@ -142,7 +142,7 @@
                 </label>
                 <div class="relative">
                   <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
-                  <input type="text" step="0.01" name="vat_11" required
+                  <input type="text" step="0.01" name="vat" required
                     class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                     placeholder="0.00" readonly>
                 </div>
@@ -153,7 +153,7 @@
                 </label>
                 <div class="relative">
                   <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
-                  <input type="text" step="0.01" name="pph_2" required
+                  <input type="text" step="0.01" name="pph" required
                     class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                     placeholder="0.00" readonly>
                 </div>
@@ -336,8 +336,8 @@
 
         // Auto-calculate VAT and PPH
         const amountField = document.querySelector('input[name="amount"]');
-        const vatField = document.querySelector('input[name="vat_11"]');
-        const pphField = document.querySelector('input[name="pph_2"]');
+        const vatField = document.querySelector('input[name="vat"]');
+        const pphField = document.querySelector('input[name="pph"]');
 
         if (amountField) {
           amountField.addEventListener('input', function() {
@@ -398,8 +398,8 @@
 
         document.querySelector('[name="amount"]').value = formatRupiah(amount);
         document.querySelector('[name="denda"]').value = formatRupiah(denda);
-        document.querySelector('[name="vat_11"]').value = formatRupiah(vat);
-        document.querySelector('[name="pph_2"]').value = formatRupiah(pph);
+        document.querySelector('[name="vat"]').value = formatRupiah(vat);
+        document.querySelector('[name="pph"]').value = formatRupiah(pph);
         document.querySelector('[name="payment_vat"]').value = formatRupiah(paymentVat);
         document.querySelector('[name="real_payment"]').value = formatRupiah(realPayment);
       }

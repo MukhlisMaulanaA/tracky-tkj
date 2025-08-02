@@ -37,9 +37,7 @@
           <h2 class="text-2xl font-bold text-gray-900">Invoice Details</h2>
           <p class="text-sm text-gray-600">Complete financial information and payment status</p>
         </div>
-        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-          {{ $invoice->remark }}
-        </span>
+        {!! $invoice->remark_badge !!}
       </div>
 
       <!-- Grid Info -->
@@ -51,19 +49,19 @@
             Project Information
           </h2>
           <div>
-            <label class="text-sm font-medium text-gray-500">Project ID</label>
+            <label class="text-lg font-medium text-gray-500">Project ID</label>
             <p class="text-lg font-semibold text-gray-900">{{ $invoice->project->id_project ?? '-' }}</p>
           </div>
           <div>
-            <label class="text-sm font-medium text-gray-500">Customer</label>
+            <label class="text-lg font-medium text-gray-500">Customer</label>
             <p class="text-lg font-semibold text-gray-900">{{ $invoice->project->customer_name ?? '-' }}</p>
           </div>
           <div>
-            <label class="text-sm font-medium text-gray-500">Project</label>
+            <label class="text-lg font-medium text-gray-500">Project</label>
             <p class="text-lg font-semibold text-gray-900">{{ $invoice->project->project_name ?? '-' }}</p>
           </div>
           <div>
-            <label class="text-sm font-medium text-gray-500">PO Number</label>
+            <label class="text-lg font-medium text-gray-500">PO Number</label>
             <p class="text-lg font-semibold text-gray-900">{{ $invoice->project->po_number ?? '-' }}</p>
           </div>
         </div>
@@ -75,15 +73,15 @@
             Invoice Details
           </h2>
           <div>
-            <label class="text-sm font-medium text-gray-500">No</label>
+            <label class="text-lg font-medium text-gray-500">No</label>
             <p class="text-lg font-semibold text-gray-900">{{ $invoice->invoice_number ?? '-' }}</p>
           </div>
           <div>
-            <label class="text-sm font-medium text-gray-500">Creation Date</label>
+            <label class="text-lg font-medium text-gray-500">Creation Date</label>
             <p class="text-lg font-semibold text-gray-900">{{ $createDate ?? '-' }}</p>
           </div>
           <div>
-            <label class="text-sm font-medium text-gray-500">Submission</label>
+            <label class="text-lg font-medium text-gray-500">Submission</label>
             <p class="text-lg font-semibold text-gray-900">{{ $submitDate ?? '-' }}</p>
           </div>
         </div>
@@ -95,12 +93,16 @@
             Payment Information
           </h2>
           <div>
-            <label class="text-sm font-medium text-gray-500">Status</label>
-            <p class="text-lg font-semibold text-gray-900">{{ $invoice->remark ?? '-' }}</p>
+            <label class="text-lg font-medium text-gray-500">Status</label>
+            <p class="text-lg font-semibold text-gray-900">{{ $invoice->remarks ?? '-' }}</p>
           </div>
           <div>
-            <label class="text-sm font-medium text-gray-500">Payment Date</label>
+            <label class="text-lg font-medium text-gray-500">Payment Date</label>
             <p class="text-lg font-semibold text-gray-900">{{ $paymentDate ?? '-' }}</p>
+          </div>
+          <div>
+            <label class="text-lg font-medium text-gray-500">Notes</label>
+            <p class="text-lg font-semibold text-gray-900">{{ $invoice->notes ?? '-' }}</p>
           </div>
         </div>
       </div>
