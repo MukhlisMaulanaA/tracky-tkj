@@ -10,8 +10,9 @@
         <p class="text-sm text-gray-600">Perbarui data Invoice di bawah ini</p>
       </div>
 
-      <form method="POST" action="{{ route('invoices.store') }}" class="space-y-8">
+      <form method="POST" action="{{ route('invoices.update', $invoice->id) }}" class="space-y-8">
         @csrf
+        @method('PUT')
 
         <!-- Main Form Container -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
@@ -46,8 +47,8 @@
             Batal
           </button>
           <button type="submit"
-            class="px-6 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium transition-colors">
-            Simpan Invoice
+            class="px-6 py-2.5 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 font-medium transition-colors">
+            Update Invoice
           </button>
         </div>
       </form>
@@ -175,8 +176,8 @@
 
         // Auto-calculate VAT and PPH
         const amountField = document.querySelector('input[name="amount"]');
-        const vatField = document.querySelector('input[name="vat_11"]');
-        const pphField = document.querySelector('input[name="pph_2"]');
+        const vatField = document.querySelector('input[name="vat"]');
+        const pphField = document.querySelector('input[name="pph"]');
 
         if (amountField) {
           amountField.addEventListener('input', function() {
@@ -237,8 +238,8 @@
 
         document.querySelector('[name="amount"]').value = formatRupiah(amount);
         document.querySelector('[name="denda"]').value = formatRupiah(denda);
-        document.querySelector('[name="vat_11"]').value = formatRupiah(vat);
-        document.querySelector('[name="pph_2"]').value = formatRupiah(pph);
+        document.querySelector('[name="vat"]').value = formatRupiah(vat);
+        document.querySelector('[name="pph"]').value = formatRupiah(pph);
         document.querySelector('[name="payment_vat"]').value = formatRupiah(paymentVat);
         document.querySelector('[name="real_payment"]').value = formatRupiah(realPayment);
       }
@@ -249,6 +250,41 @@
           const input = document.querySelector(`[name="${id}"]`);
           input.addEventListener('input', hitungOtomatis);
         });
+      });
+
+      // interactive buttone
+      document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.remark-button');
+
+        buttons.forEach(button => {
+          button.addEventListener('click', () => {
+            // Reset semua ke default (abu)
+            buttons.forEach(btn => {
+              btn.classList.remove('bg-green-100', 'text-green-800', 'border-green-300');
+              btn.classList.remove('bg-yellow-100', 'text-yellow-800', 'border-yellow-300');
+              btn.classList.remove('bg-red-100', 'text-red-800', 'border-red-300');
+              btn.classList.add('bg-gray-100', 'text-gray-700', 'border-gray-300');
+            });
+
+            // Tandai sebagai terpilih
+            const val = button.getAttribute('data-value');
+            button.previousElementSibling.checked = true;
+
+            if (val === 'DONE PAYMENT') {
+              button.classList.remove('bg-gray-100', 'text-gray-700', 'border-gray-300');
+              button.classList.add('bg-green-100', 'text-green-800', 'border-green-300');
+            } else if (val === 'PROCES PAYMENT') {
+              button.classList.remove('bg-gray-100', 'text-gray-700', 'border-gray-300');
+              button.classList.add('bg-yellow-100', 'text-yellow-800', 'border-yellow-300');
+            } else if (val === 'WAITING PAYMENT') {
+              button.classList.remove('bg-gray-100', 'text-gray-700', 'border-gray-300');
+              button.classList.add('bg-red-100', 'text-red-800', 'border-red-300');
+            }
+          });
+        });
+
+        // Trigger default button
+        document.querySelector('.remark-button[data-value="{{ $invoice->remarks }}"]').click();
       });
     </script>
   @endpush

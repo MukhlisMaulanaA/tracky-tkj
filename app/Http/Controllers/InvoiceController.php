@@ -265,7 +265,7 @@ class InvoiceController extends Controller
       'PT. Smart Industries',
       'CV. Tech Partners'
     ];
-    // dd($invoice->id_project);
+    // dd($invoice->remarks);
 
     return view('dashboard.invoices.edit', compact('invoice', 'projects', 'years', 'projectSuggestions', 'customerSuggestions'));
   }
@@ -294,7 +294,8 @@ class InvoiceController extends Controller
       'date_payment' => $request->date_payment,
       'po_number' => $request->po_number,
       'invoice_number' => $request->invoice_number,
-      'remark' => $request->remark,
+      'remarks' => $request->remarks,
+      'notes' => $request->notes,
       'amount' => $amount,
       'vat_11' => $vat,
       'pph_2' => $pph,

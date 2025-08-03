@@ -1,3 +1,28 @@
+<!-- Project Selection -->
+<div class="p-6 border-b border-gray-100">
+  <h3 class="text-lg font-semibold text-gray-900 mb-4">Pilih Project</h3>
+  <div>
+    @if (!isset($invoice))
+      <label class="block text-sm font-medium text-gray-700 mb-2">ID Project</label>
+      <select id="id_project" name="id_project"
+        class="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+        required>
+        <option value="">-- Pilih Project --</option>
+        @foreach ($projects as $project)
+          <option value="{{ $project->id_project }}" {{ old('id_project') == $project->id_project ? 'selected' : '' }}>
+            {{ $project->id_project }} - {{ $project->project_name }}
+          </option>
+        @endforeach
+      </select>
+    @else
+      <label class="block text-sm font-medium text-gray-700 mb-2">ID Project</label>
+      <input type="text" class="w-full px-3 py-2.5 border border-gray-300 rounded-md bg-gray-50 text-gray-700" 
+        value="{{ optional($invoice->project)->id_project }} - {{ optional($invoice->project)->project_name }}" readonly>
+      <input type="hidden" name="id_project" value="{{ old('id_project', $invoice->id_project) }}">
+    @endif
+  </div>
+</div>
+
 <!-- Project Details (readonly) -->
 <div class="p-6 border-b border-gray-100 space-y-4">
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -66,15 +91,16 @@
       <label class="block text-sm font-medium text-gray-700 mb-2">VAT %</label>
       <select name="vat_percent"
         class="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-        <option value="11" selected>11%</option>
-        <option value="12">12%</option>
+        <option value="11" {{ old('vat_percent', $invoice->vat_percent ?? 11) == 11 ? 'selected' : '' }}>11%</option>
+        <option value="12" {{ old('vat_percent', $invoice->vat_percent ?? 11) == 12 ? 'selected' : '' }}>12%</option>
       </select>
     </div>
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">PPH %</label>
-      <input type="number" step="0.01" name="pph_percent" value="2"
+      <input type="number" step="0.01" name="pph_percent"
         class="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-        min="0" max="100">
+        min="0" max="100"
+        value="{{ old('pph_percent', $invoice->pph_percent ?? 2) }}">
     </div>
   </div>
 </div>
@@ -84,11 +110,15 @@
   <h3 class="text-lg font-semibold text-gray-900 mb-4">Detail Jumlah</h3>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+      <label class="block text-sm font-medium text-gray-700 mb-2">
+        Amount <span class="text-red-500">*</span>
+      </label>
       <div class="relative">
         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
-        <input type="text" name="amount" value="{{ old('amount', number_format($invoice->amount ?? 0, 0, '', ',')) }}"
-        class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
+        <input type="text" name="amount" required
+          class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          placeholder="0.00"
+          value="{{ old('amount', $invoice->amount ?? '') }}">
       </div>
     </div>
     <div>
@@ -97,9 +127,10 @@
       </label>
       <div class="relative">
         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
-        <input type="text" step="0.01" name="vat_11" value="{{ old('vat_11', number_format($invoice->vat_11 ?? 0, 0, '', ',')) }}"
+        <input type="text" step="0.01" name="vat" required
           class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          required readonly>
+          placeholder="0.00" readonly
+          value="{{ old('vat', $invoice->vat ?? '') }}">
       </div>
     </div>
     <div>
@@ -108,41 +139,40 @@
       </label>
       <div class="relative">
         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
-        <input type="text" step="0.01" name="pph_2" value="{{ old('pph_2', number_format($invoice->pph_2 ?? 0, 0, '', ',')) }}"
+        <input type="text" step="0.01" name="pph" required
           class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          required readonly>
+          placeholder="0.00" readonly
+          value="{{ old('pph', $invoice->pph ?? '') }}">
       </div>
     </div>
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-2">
-        Denda <span class="text-red-500">*</span>
-      </label>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Denda</label>
       <div class="relative">
         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
-        <input type="text" step="0.01" name="denda" value="{{ old('denda', number_format($invoice->denda ?? 0, 0, '', ',')) }}"
-          class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+        <input type="text" step="0.01" name="denda"
+          class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          placeholder="0.00"
+          value="{{ old('denda', $invoice->denda ?? '') }}">
       </div>
     </div>
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-2">
-        Payment VAT/PPH 11/2
-      </label>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Payment VAT/PPH 11/2</label>
       <div class="relative">
         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
-        <input type="text" step="0.01" name="payment_vat" value="{{ old('payment_vat', number_format($invoice->payment_vat ?? 0, 0, '', ',')) }}"
+        <input type="text" step="0.01" name="payment_vat"
           class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          required readonly>
+          placeholder="0.00"
+          value="{{ old('payment_vat', $invoice->payment_vat ?? '') }}">
       </div>
     </div>
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-2">
-        Real Payment
-      </label>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Real Payment</label>
       <div class="relative">
         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
-        <input type="text" step="0.01" name="real_payment" value="{{ old('real_payment', number_format($invoice->real_payment ?? 0, 0, '', ',')) }}"
+        <input type="text" step="0.01" name="real_payment"
           class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          required readonly>
+          placeholder="0.00"
+          value="{{ old('real_payment', $invoice->real_payment ?? '') }}">
       </div>
     </div>
   </div>
@@ -150,6 +180,40 @@
 
 <!-- Remark -->
 <div class="p-6">
-  <label class="block text-sm font-medium text-gray-700 mb-2">Remark</label>
-  <textarea name="remark" rows="2" class="form-textarea w-full border-gray-300 rounded-md">{{ old('remark', $invoice->remark) }}</textarea>
+  <h3 class="text-lg font-semibold text-gray-900 mb-4">Catatan</h3>
+  <div class="mb-4">
+    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Status</label>
+    <div class="flex space-x-2" id="remark-group">
+      @php
+        $remarkValue = old('remarks', $invoice->remarks ?? '');
+      @endphp
+      <label class="cursor-pointer">
+        <input type="radio" name="remarks" value="DONE PAYMENT" class="hidden" {{ $remarkValue == 'DONE PAYMENT' ? 'checked' : '' }}>
+        <span data-value="DONE PAYMENT"
+          class="remark-button inline-block px-4 py-2 rounded-full text-sm font-medium border bg-gray-100 text-gray-700 border-gray-300">
+          DONE
+        </span>
+      </label>
+      <label class="cursor-pointer">
+        <input type="radio" name="remarks" value="PROCES PAYMENT" class="hidden" {{ $remarkValue == 'PROCES PAYMENT' ? 'checked' : '' }}>
+        <span data-value="PROCES PAYMENT"
+          class="remark-button inline-block px-4 py-2 rounded-full text-sm font-medium border bg-gray-100 text-gray-700 border-gray-300">
+          PROCES
+        </span>
+      </label>
+      <label class="cursor-pointer">
+        <input type="radio" name="remarks" value="WAITING PAYMENT" class="hidden" {{ $remarkValue == 'WAITING PAYMENT' ? 'checked' : '' }}>
+        <span data-value="WAITING PAYMENT"
+          class="remark-button inline-block px-4 py-2 rounded-full text-sm font-medium border bg-gray-100 text-gray-700 border-gray-300">
+          WAITING
+        </span>
+      </label>
+    </div>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+    <textarea name="notes" rows="3"
+      class="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+      placeholder="Tambahkan catatan atau keterangan tambahan...">{{ old('notes', $invoice->notes ?? '') }}</textarea>
+  </div>
 </div>
