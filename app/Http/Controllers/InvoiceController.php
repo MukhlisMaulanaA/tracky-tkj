@@ -188,7 +188,8 @@ class InvoiceController extends Controller
       'date_payment' => $request->date_payment,
       'po_number' => $request->po_number,
       'invoice_number' => $request->invoice_number,
-      'remark' => $request->remark,
+      'remarks' => $request->remarks,
+      'notes' => $request->notes,
       'amount' => $amount,
       'vat' => $vat,
       'pph' => $pph,
@@ -196,6 +197,8 @@ class InvoiceController extends Controller
       'payment_vat' => $paymentVat,
       'real_payment' => $realPayment,
     ]);
+
+    // dd($request);
 
     return redirect()->route('invoices.index')->with('success', 'Invoice berhasil disimpan.');
   }
@@ -308,7 +311,8 @@ class InvoiceController extends Controller
    */
   public function destroy(Invoice $invoice)
   {
-    //
+    $invoice->delete();
+    return redirect()->route('invoices.index')->with('success', 'Invoice berhasil dihapus.');
   }
 
   private function parseCurrency($value)

@@ -62,7 +62,7 @@
           </div>
           <div class="mb-2">
             <label class="text-md font-medium text-gray-500">PO Number</label>
-            <p class="text-lg font-semibold text-gray-900">{{ $invoice->project->po_number ?? '-' }}</p>
+            <p class="text-lg font-semibold text-gray-900">{{ $invoice->po_number ?? '-' }}</p>
           </div>
         </div>
 

@@ -21,7 +21,8 @@ class InvoiceRequest extends FormRequest
       'date_payment' => 'nullable|date',
       'po_number' => 'nullable|string',
       'invoice_number' => 'nullable|string',
-      'remark' => 'nullable|string',
+      'remarks' => 'string',
+      'notes' => 'nullable|string',
       'amount' => 'required|string', // masih dalam format ribuan
       'pph_percent' => 'required|numeric|min:0|max:100',
       'denda' => 'nullable|string',

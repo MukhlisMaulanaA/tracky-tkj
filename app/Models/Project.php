@@ -12,7 +12,6 @@ class Project extends Model
     'tanggal_submit',
     'tanggal_briefing',
     'project_name',
-    'nomor_po',
     'deadline',
     'remarks',
     'notes',

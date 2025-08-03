@@ -15,7 +15,6 @@ return new class extends Migration
       $table->date('tanggal_submit');
       $table->date('tanggal_briefing');
       $table->string('project_name');
-      $table->string('nomor_po')->nullable();
       $table->date('deadline')->nullable();
       $table->enum('remarks', ['Approved', 'On Progress', 'Pending', 'Cancel']);
       $table->text('notes')->nullable();
