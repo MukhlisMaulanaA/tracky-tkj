@@ -154,7 +154,7 @@
   <div class="mt-4">
     <button type="button" id="btn-hitung-otomatis"
       class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
-      Hitung Otomatis
+      Re-calculate
     </button>
   </div>
 </div>
