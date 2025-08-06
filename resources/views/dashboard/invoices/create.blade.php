@@ -247,6 +247,12 @@
           const input = document.querySelector(`[name="${id}"]`);
           input.addEventListener('input', hitungOtomatis);
         });
+
+        // Tambahkan event untuk tombol hitung otomatis
+        const btnHitung = document.getElementById('btn-hitung-otomatis');
+        if (btnHitung) {
+          btnHitung.addEventListener('click', hitungOtomatis);
+        }
       });
 
       // interactive buttone
