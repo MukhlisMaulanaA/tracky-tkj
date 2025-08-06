@@ -134,7 +134,7 @@ class InvoiceController extends Controller
   /**
    * Show the form for creating a new resource.
    */
-  public function create()
+  public function create(Invoice $invoice)
   {
     $projects = Project::all();
     // dd($projects);
@@ -159,7 +159,7 @@ class InvoiceController extends Controller
       'CV. Tech Partners'
     ];
 
-    return view('dashboard.invoices.create', compact('years', 'projects', 'projectSuggestions', 'customerSuggestions'));
+    return view('dashboard.invoices.create', compact('years', 'projects', 'invoice', 'projectSuggestions', 'customerSuggestions'));
   }
 
   /**
