@@ -146,8 +146,8 @@
       <!-- Summary Steps -->
       <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4 text-sm text-yellow-800 space-y-1">
         <p><strong>Langkah 1:</strong> Base Amount: Rp{{ number_format($invoice->amount, 0, ',', '.') }}</p>
-        <p><strong>Langkah 2:</strong> + VAT ({{ $invoice->vat_11 }})</p>
-        <p><strong>Langkah 3:</strong> - PPH ({{ $invoice->pph_2 }})</p>
+        <p><strong>Langkah 2:</strong> + VAT ({{ $invoice->vat }})</p>
+        <p><strong>Langkah 3:</strong> - PPH ({{ $invoice->pph }})</p>
         <p><strong>Akhir:</strong> Real Payment:
           <strong>Rp{{ number_format($invoice->real_payment, 0, ',', '.') }}</strong>
         </p>
