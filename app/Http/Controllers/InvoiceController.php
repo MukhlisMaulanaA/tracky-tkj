@@ -23,11 +23,11 @@ class InvoiceController extends Controller
     if ($request->has('remark_filter') && $request->remark_filter !== '') {
       $keyword = strtoupper($request->remark_filter);
       if ($keyword === 'DONE') {
-        $query->whereRaw("UPPER(remark) = 'DONE PAYMENT'");
+        $query->whereRaw("UPPER(remarks) = 'DONE PAYMENT'");
       } elseif ($keyword === 'WAITING') {
-        $query->whereRaw("UPPER(remark) LIKE 'WAITING PAYMENT%'");
+        $query->whereRaw("UPPER(remarks) LIKE 'WAITING PAYMENT%'");
       } elseif ($keyword === 'PROCES') {
-        $query->whereRaw("UPPER(remark) LIKE 'PROCES PAYMENT%'");
+        $query->whereRaw("UPPER(remarks) LIKE 'PROCES PAYMENT%'");
       }
     }
 

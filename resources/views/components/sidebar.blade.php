@@ -2,6 +2,16 @@
   $routes = [
       ['name' => 'Dashboard', 'href' => route('index.dashboard'), 'icon' => 'layout-dashboard'],
       [
+          'name' => 'Projects',
+          'href' => route('projects.index'),
+          'icon' => 'construction',
+          'hasSubmenu' => true,
+          'submenu' => [
+              ['name' => 'Tambah Project', 'href' => route('projects.create'), 'icon' => 'plus'],
+              ['name' => 'Daftar Project', 'href' => route('projects.index'), 'icon' => 'list'],
+          ],
+      ],
+      [
           'name' => 'Invoice Tracker',
           'href' => route('invoices.index'),
           'icon' => 'file-text',
@@ -49,7 +59,7 @@
             <button
               @click="collapsed ? window.location.href = '{{ $route['href'] }}' : (openSubmenu = openSubmenu === {{ $index }} ? null : {{ $index }})"
               class="group flex items-center w-full px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 text-left
-                {{ str_contains(request()->url(), 'invoices') ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100' }}"
+                {{ request()->url() === $route['href'] ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100' }}"
               x-tooltip="collapsed ? '{{ $route['name'] }}' : ''">
 
               <x-icon :name="$route['icon']" class="h-5 w-5 flex-shrink-0" />
@@ -161,7 +171,7 @@
             <button
               @click="mobileOpenSubmenu = mobileOpenSubmenu === {{ $index }} ? null : {{ $index }}"
               class="group flex items-center w-full px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200 text-left
-                {{ str_contains(request()->url(), 'invoices') ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100' }}">
+                {{ request()->url() === $route['href'] ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100' }}">
               <x-icon :name="$route['icon']" class="h-5 w-5 flex-shrink-0" />
               <span class="ml-3 flex-1 text-left">{{ $route['name'] }}</span>
               <x-icon name="chevron-down"

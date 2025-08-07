@@ -15,6 +15,7 @@ class ProjectSeeder extends Seeder
       [
         'id_project' => 'P25A005',
         'customer_name' => 'PT Alpha Teknologi',
+        'location' => 'Aceh',
         'tanggal_submit' => '2025-01-05',
         'tanggal_briefing' => '2025-01-07',
         'project_name' => 'Development Internal App',
@@ -27,6 +28,7 @@ class ProjectSeeder extends Seeder
       [
         'id_project' => 'P25B022',
         'customer_name' => 'CV Beta Jaya',
+        'location' => 'Jakarta Pusat',
         'tanggal_submit' => '2025-02-10',
         'tanggal_briefing' => '2025-02-12',
         'project_name' => 'Website Company Profile',
@@ -39,6 +41,7 @@ class ProjectSeeder extends Seeder
       [
         'id_project' => 'P25C013',
         'customer_name' => 'PT Gamma Nusantara',
+        'location' => 'Jakarta Barat',
         'tanggal_submit' => '2025-03-15',
         'tanggal_briefing' => '2025-03-18',
         'project_name' => 'E-Commerce Platform',
@@ -51,6 +54,7 @@ class ProjectSeeder extends Seeder
       [
         'id_project' => 'P25E001',
         'customer_name' => 'PT Datindo Infonet Prima',
+        'location' => 'Bandung',
         'tanggal_submit' => '2025-03-15',
         'tanggal_briefing' => '2025-03-18',
         'project_name' => 'Network Installation',
