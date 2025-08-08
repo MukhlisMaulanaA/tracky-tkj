@@ -21,10 +21,10 @@
       <label class="text-sm font-medium text-gray-700 mr-2">Filter Status:</label>
       <select id="filter-remark" class="border border-gray-300 rounded px-3 py-1 text-sm">
         <option value="">All</option>
-        <option value="Approved">Approved</option>
-        <option value="On Progress">On Progress</option>
-        <option value="Pending">Pending</option>
-        <option value="Cancel">Cancel</option>
+        <option value="APPROVED">Approved</option>
+        <option value="PROGRESS">On Progress</option>
+        <option value="PENDING">Pending</option>
+        <option value="CANCEL">Cancel</option>
       </select>
     </div>
 
@@ -80,11 +80,11 @@
             data: 'remarks',
             render: function(data, type, row) {
               let color = 'bg-gray-100 text-gray-800';
-              if (data === 'Approved') color = 'bg-blue-100 text-blue-800';
-              else if (data === 'On Progress') color = 'bg-green-100 text-green-800';
-              else if (data === 'Pending') color = 'bg-yellow-100 text-yellow-800';
-              else if (data === 'Cancel') color = 'bg-red-100 text-red-800';
-              return `<span class="px-3 py-1 rounded-full text-sm font-medium ${color}">${data}</span>`;
+              if (data === 'APPROVED') color = 'bg-blue-100 text-blue-800';
+              else if (data === 'PROGRESS') color = 'bg-green-100 text-green-800';
+              else if (data === 'PENDING') color = 'bg-yellow-100 text-yellow-800';
+              else if (data === 'CANCEL') color = 'bg-red-100 text-red-800';
+              return `<span class="px-3 py-1 rounded w-full text-sm font-medium ${color}">${data}</span>`;
             }
           },
           {

@@ -22,15 +22,15 @@ class ProjectController extends Controller
     $query = Project::query();
 
     if ($request->has('remark_filter') && $request->remark_filter !== '') {
-      $keyword = str($request->remark_filter);
-      if ($keyword === 'Approved') {
-        $query->whereRaw("(remarks) = 'Approved'");
-      } elseif ($keyword === 'On Progress') {
-        $query->whereRaw("(remarks) LIKE 'On Progress%'");
-      } elseif ($keyword === 'Pending') {
-        $query->whereRaw("(remarks) LIKE 'Pending%'");
-      } elseif ($keyword === 'Cancel') {
-        $query->whereRaw("(remarks) LIKE = 'Cancel%'");
+      $keyword = strtoupper($request->remark_filter);
+      if ($keyword === 'APPROVED') {
+        $query->whereRaw("UPPER(remarks) = 'APPROVED'");
+      } elseif ($keyword === 'PROGRESS') {
+        $query->whereRaw("UPPER(remarks) LIKE 'PROGRESS%'");
+      } elseif ($keyword === 'PENDING') {
+        $query->whereRaw("UPPER(remarks) LIKE 'PENDING%'");
+      } elseif ($keyword === 'CANCEL') {
+        $query->whereRaw("UPPER(remarks) LIKE 'CANCEL%'");
       }
     }
 
@@ -43,13 +43,12 @@ class ProjectController extends Controller
         <div class="flex items-center space-x-3">
           <a href="' . $showUrl . '" title="Lihat Detail" class="bg-blue-50 p-1 rounded">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path d="M15.232 5.232l3.536 3.536M9 11l6-6 3.536 3.536-6 6H9v-3.536z" />
+              <path d="M9 12h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2h-6.586A2 2 0 008.586 4L6 6.586A2 2 0 004 8.586V17a2 2 0 002 2h8a2 2 0 002-2v-3" />
             </svg>
           </a>
-          <a href="' . $editUrl . '" title="Edit" class="bg-yellow-50 p-1 rounded">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path d="M12 20h9" />
-              <path d="M16.5 3.5a2.121 2.121 0 113 3L7 19.5 3 21l1.5-4L16.5 3.5z" />
+          <a href="' . $editUrl . '" title="Edit" class="bg-green-50 p-1 rounded">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M15.232 5.232l3.536 3.536M9 11l6-6 3.536 3.536-6 6H9v-3.536z" />
             </svg>
           </a>
           <form action="' . $deleteUrl . '" method="POST" onsubmit="return confirm(\'Hapus project ini?\')" class="bg-red-50 p-1 rounded inline">
