@@ -44,7 +44,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/datatable', [ProjectController::class, 'datatable'])->name('datatable');
     Route::get('/create', [ProjectController::class, 'create'])->name('create');
     Route::post('/', [ProjectController::class, 'store'])->name('store');
-    Route::get('/{project}', [ProjectController::class, 'show'])->name('show');
+    Route::get('/{id_project}', [ProjectController::class, 'show'])->name('show');
     Route::get('/{project}/edit', [ProjectController::class, 'edit'])->name('edit');
     Route::put('/{project}', [ProjectController::class, 'update'])->name('update');
     Route::delete('/{project}', [ProjectController::class, 'destroy'])->name('destroy');

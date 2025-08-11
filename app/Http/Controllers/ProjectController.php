@@ -92,15 +92,25 @@ class ProjectController extends Controller
   /**
    * Display the specified resource.
    */
-  public function show(Project $project, string $id_project)
+  public function show(Project $project, string $id_project = null)
   {
-    $project = Project::where('id_project', $id_project)->firstOrFail();
-    return response()->json([
-      'customer_name' => $project->customer_name,
-      'project_name' => $project->project_name,
-      'nomor_po' => $project->nomor_po,
-      'year' => $project->created_at ? $project->created_at->format('Y') : null,
-    ]);
+    // If $id_project is provided, fetch by id_project, else use route model binding
+    if ($id_project) {
+      $project = Project::where('id_project', $id_project)->firstOrFail();
+    }
+
+    // If request expects JSON (AJAX for create form), return JSON
+    if (request()->expectsJson()) {
+      return response()->json([
+        'customer_name' => $project->customer_name,
+        'project_name' => $project->project_name,
+        'nomor_po' => $project->nomor_po,
+        'year' => $project->created_at ? $project->created_at->format('Y') : null,
+      ]);
+    }
+
+    // Otherwise, show the detail page
+    return view('dashboard.projects.show', compact('project'));
   }
   /**
    * Show the form for editing the specified resource.
