@@ -92,11 +92,16 @@ class ProjectController extends Controller
   /**
    * Display the specified resource.
    */
-  public function show(Project $project)
+  public function show(Project $project, string $id_project)
   {
-    return view('dashboard.projects.show', compact('project'));
+    $project = Project::where('id_project', $id_project)->firstOrFail();
+    return response()->json([
+      'customer_name' => $project->customer_name,
+      'project_name' => $project->project_name,
+      'nomor_po' => $project->nomor_po,
+      'year' => $project->created_at ? $project->created_at->format('Y') : null,
+    ]);
   }
-
   /**
    * Show the form for editing the specified resource.
    */
