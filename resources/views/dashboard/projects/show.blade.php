@@ -1,4 +1,4 @@
-@extends('dashboard') {{-- Sesuaikan dengan path dashboard.blade.php kamu --}}
+@extends('layouts.dashboard') {{-- Sesuaikan dengan path dashboard.blade.php kamu --}}
 
 @section('title', 'Detail Proyek')
 
@@ -36,7 +36,7 @@
       @include('projects.partials.detail-card')
 
       {{-- Pesanan Pembelian --}}
-      @include('projects.partials.purchase-orders')
+      @include('projects.partials.invoice-card')
 
       {{-- Pelacakan Kemajuan --}}
       @include('projects.partials.progress-tracking')

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Invoice;
 use App\Models\Project;
 use Illuminate\Http\Request;
 
@@ -92,12 +93,14 @@ class ProjectController extends Controller
   /**
    * Display the specified resource.
    */
-  public function show(Project $project, string $id_project = null)
+  public function show(Project $project, Invoice $invoice, string $id_project = null)
   {
     // If $id_project is provided, fetch by id_project, else use route model binding
     if ($id_project) {
       $project = Project::where('id_project', $id_project)->firstOrFail();
     }
+
+    $invoice = Invoice::where('id_project', $id_project)->firstOrFail();
 
     // If request expects JSON (AJAX for create form), return JSON
     if (request()->expectsJson()) {
@@ -110,7 +113,7 @@ class ProjectController extends Controller
     }
 
     // Otherwise, show the detail page
-    return view('dashboard.projects.show', compact('project'));
+    return view('dashboard.projects.show', compact('project', 'invoice'));
   }
   /**
    * Show the form for editing the specified resource.
