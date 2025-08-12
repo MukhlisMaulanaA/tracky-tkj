@@ -44,8 +44,9 @@ class InvoiceController extends Controller
           $label = 'bg-yellow-100 text-yellow-800 border-yellow-300';
         }
 
-        return '<span class="inline-block px-2 py-1 rounded border text-xs font-semibold ' . $label . '">' .
-          e($row->remarks) . '</span>';
+        return '<span class="inline-block px-3 py-1 rounded text-xs font-semibold border ' . $label . '">'
+          . e($row->remarks)
+          . '</span><br><small class="text-gray-500">Durasi: ' . ($row->duration ?? 0) . ' hari</small>';
       })
       ->addColumn('id_project', fn($row) => $row->project->id_project ?? '-')
       ->addColumn(
@@ -178,6 +179,9 @@ class InvoiceController extends Controller
     $paymentVat = $amount + $vat;
     $realPayment = $amount - $pph - $denda;
 
+    $datePayment = $request->remarks === 'DONE PAYMENT' ? Carbon::now() : null;
+    $duration = $this->calculateDuration($request->remarks, $request->submit_date);
+
     // dd($request->id_project);
 
     Invoice::create([
@@ -185,7 +189,8 @@ class InvoiceController extends Controller
       'year' => $request->year,
       'create_date' => $request->create_date,
       'submit_date' => $request->submit_date,
-      'date_payment' => $request->date_payment,
+      'date_payment' => $datePayment,
+      'duration' => $duration,
       'po_number' => $request->po_number,
       'invoice_number' => $request->invoice_number,
       'remarks' => $request->remarks,
@@ -198,7 +203,7 @@ class InvoiceController extends Controller
       'real_payment' => $realPayment,
     ]);
 
-    // dd($request);
+    dd($request);
 
     return redirect()->route('invoices.index')->with('success', 'Invoice berhasil disimpan.');
   }
@@ -286,12 +291,35 @@ class InvoiceController extends Controller
     $paymentVat = $amount + $vat;
     $realPayment = $amount - $pph - $denda;
 
+    // Tentukan date_payment
+    if ($request->remarks === 'DONE PAYMENT') {
+      // Kalau sebelumnya belum ada date_payment, set sekarang
+      $datePayment = $invoice->date_payment ?? Carbon::now();
+    } else {
+      $datePayment = $invoice->date_payment; // biarkan tetap
+    }
+
+    // Hitung duration
+    if ($request->submit_date) {
+      if ($request->remarks === 'DONE PAYMENT') {
+        $duration = Carbon::parse($request->submit_date)
+          ->diffInDays($datePayment ?? Carbon::now());
+      } else {
+        $duration = Carbon::parse($request->submit_date)
+          ->diffInDays(Carbon::now());
+      }
+    } else {
+      $duration = null;
+    }
+    // dd($duration);
+
     $invoice->update([
       'id_project' => $request->id_project,
       'year' => $request->year,
       'create_date' => $request->create_date,
       'submit_date' => $request->submit_date,
-      'date_payment' => $request->date_payment,
+      'date_payment' => $datePayment,
+      'duration' => $duration,
       'po_number' => $request->po_number,
       'invoice_number' => $request->invoice_number,
       'remarks' => $request->remarks,
@@ -327,5 +355,16 @@ class InvoiceController extends Controller
     $value = str_replace(',', '.', $value);
 
     return (float) $value;
+  }
+
+  private function calculateDuration($remarks, $submitDate)
+  {
+    if (!$submitDate)
+      return null;
+
+    if ($remarks === 'DONE PAYMENT') {
+      return Carbon::parse($submitDate)->diffInDays(Carbon::now());
+    }
+    return Carbon::parse($submitDate)->diffInDays(Carbon::now());
   }
 }

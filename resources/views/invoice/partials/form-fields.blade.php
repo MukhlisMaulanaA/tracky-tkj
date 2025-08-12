@@ -50,11 +50,6 @@
       <input type="date" name="submit_date" value="{{ old('submit_date', $invoice->submit_date) }}"
         class="form-input w-full border-gray-300 rounded-md">
     </div>
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Pembayaran</label>
-      <input type="date" name="date_payment" value="{{ old('date_payment', $invoice->date_payment) }}"
-        class="form-input w-full border-gray-300 rounded-md">
-    </div>
   </div>
 </div>
 

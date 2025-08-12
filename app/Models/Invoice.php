@@ -15,6 +15,7 @@ class Invoice extends Model
     'create_date',
     'submit_date',
     'date_payment',
+    'duration',
     'po_number',
     'invoice_number',
     'remarks',

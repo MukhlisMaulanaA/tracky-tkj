@@ -15,6 +15,7 @@ return new class extends Migration {
       $table->date('submit_date')->nullable();
       $table->date('date_payment')->nullable();
       $table->string('po_number')->nullable();
+      $table->unsignedInteger('duration')->nullable();
       $table->string('invoice_number')->nullable();
       $table->enum('remarks', ['DONE PAYMENT', 'WAITING PAYMENT', 'PROCES PAYMENT']);
       $table->text('notes')->nullable();

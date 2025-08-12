@@ -93,27 +93,28 @@ class ProjectController extends Controller
   /**
    * Display the specified resource.
    */
-  public function show(Project $project, Invoice $invoice, string $id_project = null)
+  // For web route: show project detail page
+  public function show(Project $project, string $id_project)
   {
-    // If $id_project is provided, fetch by id_project, else use route model binding
-    if ($id_project) {
-      $project = Project::where('id_project', $id_project)->firstOrFail();
-    }
+    $project = Project::where('id_project', $id_project)->firstOrFail();
 
-    $invoice = Invoice::where('id_project', $id_project)->firstOrFail();
-
-    // If request expects JSON (AJAX for create form), return JSON
-    if (request()->expectsJson()) {
-      return response()->json([
-        'customer_name' => $project->customer_name,
-        'project_name' => $project->project_name,
-        'nomor_po' => $project->nomor_po,
-        'year' => $project->created_at ? $project->created_at->format('Y') : null,
-      ]);
-    }
-
-    // Otherwise, show the detail page
+    $invoice = Invoice::where('id_project', $project->id_project)->first();
     return view('dashboard.projects.show', compact('project', 'invoice'));
+  }
+
+  // For JSON request: return project data as JSON (e.g., for AJAX)
+  public function showJson(Request $request, string $id_project)
+  {
+    $project = Project::where('id_project', $id_project)->firstOrFail();
+    $invoice = Invoice::where('id_project', $id_project)->first();
+
+    return response()->json([
+      'customer_name' => $project->customer_name,
+      'project_name' => $project->project_name,
+      'nomor_po' => $project->nomor_po,
+      'year' => $project->created_at ? $project->created_at->format('Y') : null,
+      'invoice' => $invoice,
+    ]);
   }
   /**
    * Show the form for editing the specified resource.

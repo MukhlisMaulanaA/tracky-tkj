@@ -19,6 +19,7 @@ class InvoiceRequest extends FormRequest
       'create_date' => 'nullable|date',
       'submit_date' => 'nullable|date',
       'date_payment' => 'nullable|date',
+      'duration' => 'nullable',
       'po_number' => 'nullable|string',
       'invoice_number' => 'nullable|string',
       'remarks' => 'string',

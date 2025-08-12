@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function () {
   });
   Route::get('/invoices/project/{project}', [InvoiceController::class, 'showByProject'])->name('invoices.show.project');
 
-  Route::get('/projects/{id_project}/detail', [ProjectController::class, 'show']);
+  Route::get('/projects/{id_project}/detail', [ProjectController::class, 'showJson']);
 
   Route::prefix('projects')->name('projects.')->middleware(['web', 'ensure-json-response'])->group(function () {
     Route::get('/', [ProjectController::class, 'index'])->name('index');
