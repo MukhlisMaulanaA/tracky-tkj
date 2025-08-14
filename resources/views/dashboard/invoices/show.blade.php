@@ -118,11 +118,11 @@
             </div>
             <div class="flex justify-between">
               <span>VAT</span>
-              <span class="font-semibold">Rp{{ number_format($invoice->vat_11, 0, ',', '.') }}</span>
+              <span class="font-semibold">Rp{{ number_format($invoice->vat, 0, ',', '.') }}</span>
             </div>
             <div class="flex justify-between">
               <span>PPH</span>
-              <span class="font-semibold text-red-600">-Rp{{ number_format($invoice->pph_2, 0, ',', '.') }}</span>
+              <span class="font-semibold text-red-600">-Rp{{ number_format($invoice->pph, 0, ',', '.') }}</span>
             </div>
             <div class="flex justify-between">
               <span>Penalty</span>
