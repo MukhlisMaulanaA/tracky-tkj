@@ -124,8 +124,10 @@ class ProjectController extends Controller
 
     $invoice = Invoice::where('id_project', $project->id_project)->first();
     
-    $briefingDate = Carbon::parse($project->briefing_date)->translatedFormat('d F Y');
-    return view('dashboard.projects.show', compact('project', 'invoice', 'briefingDate'));
+    $briefingDate = $project->briefing_date ? Carbon::parse($project->briefing_date)->translatedFormat('d F Y') : '-';
+    $submitDate = ($invoice && $invoice->submit_date) ? Carbon::parse($invoice->submit_date)->translatedFormat('d F Y') : '-';
+    
+    return view('dashboard.projects.show', compact('project', 'invoice', 'briefingDate', 'submitDate'));
   }
 
   // For JSON request: return project data as JSON (e.g., for AJAX)

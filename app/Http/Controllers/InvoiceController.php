@@ -227,7 +227,8 @@ class InvoiceController extends Controller
 
     $createDate = Carbon::parse($invoice->create_date)->translatedFormat('d F Y');
     $submitDate = Carbon::parse($invoice->submit_date)->translatedFormat('d F Y');
-    $paymentDate = Carbon::parse($invoice->date_payment)->translatedFormat('d F Y');
+    $paymentDate = $invoice->date_payment ? Carbon::parse($invoice->date_payment)->translatedFormat('d F Y') : '-';
+    // dd($paymentDate);
 
     // Generate badge HTML
     $remark = strtoupper($invoice->remarks);

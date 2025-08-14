@@ -15,8 +15,8 @@
 
       <!-- Project Name -->
       <div>
-        <label class="text-sm font-medium text-gray-500 mb-1 block">Tenggat Pembayaran</label>
-        <p class="text-base font-semibold text-gray-900">{{ $invoice->date_payment }}</p>
+        <label class="text-sm font-medium text-gray-500 mb-1 block">Tanggal Submit</label>
+        <p class="text-base font-semibold text-gray-900">{{ $submitDate }}</p>
       </div>
 
       <!-- Customer Name -->
@@ -28,8 +28,8 @@
 
       <!-- Location -->
       <div>
-        <label class="text-sm font-medium text-gray-500 mb-1 block">Lokasi</label>
-        <p class="text-base font-semibold text-gray-900">{{ $project->location }}</p>
+        <label class="text-sm font-medium text-gray-500 mb-1 block">PO. Number</label>
+        <p class="text-base font-semibold text-gray-900">{{ $invoice->po_number }}</p>
       </div>
 
       <!-- Status -->
@@ -42,14 +42,14 @@
           $iconColor = 'text-gray-400';
 
           if ($text === 'DONE PAYMENT') {
-            $label = 'bg-green-100 text-green-800 border-green-300';
-            $iconColor = 'text-green-400';
+              $label = 'bg-green-100 text-green-800 border-green-300';
+              $iconColor = 'text-green-400';
           } elseif (str_starts_with($text, 'PROCES PAYMENT')) {
-            $label = 'bg-yellow-100 text-yellow-800 border-yellow-300';
-            $iconColor = 'text-yellow-400';
+              $label = 'bg-yellow-100 text-yellow-800 border-yellow-300';
+              $iconColor = 'text-yellow-400';
           } elseif (str_starts_with($text, 'WAITING PAYMENT')) {
-            $label = 'bg-red-100 text-red-800 border-red-300';
-            $iconColor = 'text-red-400';
+              $label = 'bg-red-100 text-red-800 border-red-300';
+              $iconColor = 'text-red-400';
           }
         @endphp
 
@@ -61,8 +61,66 @@
       </div>
 
     </div>
-</div>
-@else
-<div class="text-gray-500">No invoice found for this project.</div>
-@endif
+
+    <!-- Accordion: Financial breakdown -->
+    <div class="mt-4">
+      <details class="border border-gray-200 rounded-md">
+        <summary class="px-4 py-3 cursor-pointer bg-gray-50 rounded-md flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <x-icon name="chevrons-down" class="w-4 h-4 text-gray-600" />
+            <span class="font-medium text-gray-800">Lihat Rincian Pembayaran</span>
+          </div>
+          <span class="text-sm text-gray-500">Klik untuk buka</span>
+        </summary>
+        <div class="p-4 bg-white">
+          @php
+            // Fallbacks for different column names
+            $vat = $invoice->vat_11 ?? ($invoice->vat ?? 0);
+            $pph = $invoice->pph_2 ?? ($invoice->pph ?? 0);
+            $denda = $invoice->denda ?? 0;
+            $paymentVat = $invoice->payment_vat ?? $invoice->amount + $vat;
+            $realPayment = $invoice->real_payment ?? $invoice->amount - $pph - $denda;
+          @endphp
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <div class="flex justify-between">
+                <span>Base Amount</span>
+                <span class="font-semibold">Rp{{ number_format($invoice->amount, 0, ',', '.') }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span>VAT</span>
+                <span class="font-semibold">Rp{{ number_format($vat, 0, ',', '.') }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span>PPH</span>
+                <span class="font-semibold text-red-600">-Rp{{ number_format($pph, 0, ',', '.') }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Penalty</span>
+                <span
+                  class="font-semibold">{{ $denda ? 'Rp' . number_format($denda, 0, ',', '.') : 'Tidak Ada' }}</span>
+              </div>
+              <div class="border-t border-gray-200 pt-3">
+                <div class="flex justify-between items-center"><span class="text-gray-700 font-medium">Payment with
+                    VAT</span><span
+                    class="text-blue-600 font-bold">Rp{{ number_format($paymentVat, 0, ',', '.') }}</span></div>
+              </div>
+            </div>
+
+            <div class="p-4 bg-gray-50 border rounded-md text-center">
+              <p class="text-gray-600 text-sm mb-2">Final Payment</p>
+              <p class="text-2xl font-bold text-green-600 mb-1">Rp{{ number_format($realPayment, 0, ',', '.') }}</p>
+              <p class="text-sm text-gray-500">Paid on {{ $invoice->date_payment ?? '-' }}</p>
+            </div>
+          </div>
+
+        </div>
+      </details>
+    </div>
+
+    </div>
+    @else
+    <div class="text-gray-500">No invoice found for this project.</div>
+    @endif
 </div>
