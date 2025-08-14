@@ -41,8 +41,8 @@
 
     <!-- Start Date -->
     <div>
-      <label class="text-sm font-medium text-gray-500 mb-1 block">Tanggal Mulai</label>
-      <p class="text-base font-semibold text-gray-900">{{ $project->tanggal_submit }}</p>
+      <label class="text-sm font-medium text-gray-500 mb-1 block">Tanggal Briefing</label>
+      <p class="text-base font-semibold text-gray-900">{{ $briefingDate }}</p>
     </div>
   </div>
 </div>

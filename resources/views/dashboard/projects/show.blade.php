@@ -39,13 +39,13 @@
       @include('projects.partials.invoice-card')
 
       {{-- Pelacakan Kemajuan --}}
-      @include('projects.partials.progress-tracking')
+      {{-- @include('projects.partials.progress-tracking') --}}
 
       {{-- Pelacakan Kemajuan Sub --}}
-      @include('projects.partials.sub-progress')
+      {{-- @include('projects.partials.sub-progress') --}}
 
       {{-- Berita Acara Serah Terima --}}
-      @include('projects.partials.delivery-reports')
+      {{-- @include('projects.partials.delivery-reports') --}}
 
     </main>
 

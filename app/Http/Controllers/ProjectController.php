@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use App\Http\Requests\ProjectRequest;
+use Carbon\Carbon;
 
 class ProjectController extends Controller
 {
@@ -71,22 +73,44 @@ class ProjectController extends Controller
    */
   public function create()
   {
-    return view('dashboard.projects.create');
+    // Prepare an empty Project instance for the form defaults
+    $project = new Project();
+
+    // Generate a suggested id_project in new format: PYYLNNN
+    // P + YY (last two digits of year) + Letter A-L for month + 3-digit sequence
+    $yearShort = date('y');
+    $monthIndex = (int) date('n'); // 1..12
+    $monthLetter = chr(ord('A') + ($monthIndex - 1));
+
+    // Find last sequence for current YY and month letter
+    $prefix = sprintf('P%s%s', $yearShort, $monthLetter);
+    $last = Project::where('id_project', 'like', $prefix . '%')
+      ->orderBy('id', 'desc')
+      ->first();
+
+    if ($last) {
+      $lastSeq = (int)substr($last->id_project, -3);
+      $seq = $lastSeq + 1;
+    } else {
+      $seq = 1;
+    }
+
+    $suggestedId = sprintf('%s%03d', $prefix, $seq);
+    $project->id_project = $suggestedId;
+
+    // Remarks options
+    $remarksOptions = ['APPROVED', 'PROGRESS', 'PENDING', 'CANCEL'];
+
+    return view('dashboard.projects.create', compact('project', 'remarksOptions'));
   }
 
   /**
    * Store a newly created resource in storage.
    */
-  public function store(Request $request)
+  public function store(ProjectRequest $request)
   {
-    $request->validate([
-      'id_project' => 'required|unique:projects,id_project',
-      'project_name' => 'required',
-      'customer_name' => 'required',
-      'year' => 'required|integer',
-      'nomor_po' => 'required',
-    ]);
-    Project::create($request->all());
+    $data = $request->validated();
+    Project::create($data);
     return redirect()->route('projects.index')->with('success', 'Project berhasil ditambahkan.');
   }
 
@@ -99,7 +123,9 @@ class ProjectController extends Controller
     $project = Project::where('id_project', $id_project)->firstOrFail();
 
     $invoice = Invoice::where('id_project', $project->id_project)->first();
-    return view('dashboard.projects.show', compact('project', 'invoice'));
+    
+    $briefingDate = Carbon::parse($project->tanggal_briefing)->translatedFormat('d F Y');
+    return view('dashboard.projects.show', compact('project', 'invoice', 'briefingDate'));
   }
 
   // For JSON request: return project data as JSON (e.g., for AJAX)
@@ -119,23 +145,22 @@ class ProjectController extends Controller
   /**
    * Show the form for editing the specified resource.
    */
-  public function edit(Project $project)
+  public function edit($id_project)
   {
-    return view('dashboard.projects.edit', compact('project'));
+    // Find project by id_project (not by auto-increment id)
+    $project = Project::where('id_project', $id_project)->firstOrFail();
+    $remarksOptions = ['APPROVED', 'PROGRESS', 'PENDING', 'CANCEL'];
+
+    return view('dashboard.projects.edit', compact('project', 'remarksOptions'));
   }
 
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, Project $project)
+  public function update(ProjectRequest $request, Project $project)
   {
-    $request->validate([
-      'project_name' => 'required',
-      'customer_name' => 'required',
-      'year' => 'required|integer',
-      'nomor_po' => 'required',
-    ]);
-    $project->update($request->all());
+    $data = $request->validated();
+    $project->update($data);
     return redirect()->route('projects.index')->with('success', 'Project berhasil diperbarui.');
   }
 
