@@ -71,6 +71,7 @@
             <span class="font-medium text-gray-800">Lihat Rincian Pembayaran</span>
           </div>
           <span class="text-sm text-gray-500">Klik untuk buka</span>
+          <span class="text-sm text-gray-500">Klik untuk buka</span>
         </summary>
         <div class="p-4 bg-white">
           @php
