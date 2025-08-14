@@ -47,7 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/{id_project}', [ProjectController::class, 'show'])->name('show');
     Route::get('/{project}/edit', [ProjectController::class, 'edit'])->name('edit');
     Route::put('/{project}', [ProjectController::class, 'update'])->name('update');
-    Route::delete('/{project}', [ProjectController::class, 'destroy'])->name('destroy');
+    Route::delete('/{id_project}', [ProjectController::class, 'destroy'])->name('destroy');
   });
 
 

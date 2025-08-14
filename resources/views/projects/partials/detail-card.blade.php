@@ -33,8 +33,29 @@
     <!-- Status -->
     <div>
       <label class="text-sm font-medium text-gray-500 mb-1 block">Status</label>
-      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-        <i class="fas fa-circle text-yellow-400 mr-1 text-xs"></i>
+
+      @php
+        $remark = strtoupper($project->remarks ?? '');
+        $badgeClass = 'bg-gray-100 text-gray-800';
+        $iconColor = 'text-gray-400';
+
+        if ($remark === 'APPROVED') {
+          $badgeClass = 'bg-blue-100 text-blue-800';
+          $iconColor = 'text-blue-400';
+        } elseif ($remark === 'PROGRESS') {
+          $badgeClass = 'bg-green-100 text-green-800';
+          $iconColor = 'text-green-400';
+        } elseif ($remark === 'PENDING') {
+          $badgeClass = 'bg-yellow-100 text-yellow-800';
+          $iconColor = 'text-yellow-400';
+        } elseif ($remark === 'CANCEL') {
+          $badgeClass = 'bg-red-100 text-red-800';
+          $iconColor = 'text-red-400';
+        }
+      @endphp
+
+      <span class="inline-flex items-center px-3 py-1 rounded text-xs font-medium {{ $badgeClass }}">
+        <i class="fas fa-circle {{ $iconColor }} mr-1 text-xs"></i>
         {{ $project->remarks }}
       </span>
     </div>

@@ -124,7 +124,7 @@ class ProjectController extends Controller
 
     $invoice = Invoice::where('id_project', $project->id_project)->first();
     
-    $briefingDate = Carbon::parse($project->tanggal_briefing)->translatedFormat('d F Y');
+    $briefingDate = Carbon::parse($project->briefing_date)->translatedFormat('d F Y');
     return view('dashboard.projects.show', compact('project', 'invoice', 'briefingDate'));
   }
 
@@ -167,8 +167,9 @@ class ProjectController extends Controller
   /**
    * Remove the specified resource from storage.
    */
-  public function destroy(Project $project)
+  public function destroy(Project $project, string $id_project)
   {
+    $project = Project::where('id_project', $id_project);
     $project->delete();
     return redirect()->route('projects.index')->with('success', 'Project berhasil dihapus.');
   }

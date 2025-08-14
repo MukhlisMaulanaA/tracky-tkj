@@ -35,10 +35,29 @@
       <!-- Status -->
       <div>
         <label class="text-sm font-medium text-gray-500 mb-1 block">Status</label>
-        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-          <i class="fas fa-circle text-yellow-400 mr-1 text-xs"></i>
+
+        @php
+          $text = strtoupper($invoice->remarks ?? '');
+          $label = 'bg-gray-100 text-gray-700 border-gray-300';
+          $iconColor = 'text-gray-400';
+
+          if ($text === 'DONE PAYMENT') {
+            $label = 'bg-green-100 text-green-800 border-green-300';
+            $iconColor = 'text-green-400';
+          } elseif (str_starts_with($text, 'PROCES PAYMENT')) {
+            $label = 'bg-yellow-100 text-yellow-800 border-yellow-300';
+            $iconColor = 'text-yellow-400';
+          } elseif (str_starts_with($text, 'WAITING PAYMENT')) {
+            $label = 'bg-red-100 text-red-800 border-red-300';
+            $iconColor = 'text-red-400';
+          }
+        @endphp
+
+        <span class="inline-block px-3 py-1 rounded text-xs font-semibold border {{ $label }}">
+          <i class="fas fa-circle {{ $iconColor }} mr-1 text-xs"></i>
           {{ $invoice->remarks }}
         </span>
+
       </div>
 
     </div>
