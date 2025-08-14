@@ -180,7 +180,8 @@ class InvoiceController extends Controller
     $realPayment = $amount - $pph - $denda;
 
     $datePayment = $request->remarks === 'DONE PAYMENT' ? Carbon::now() : null;
-    $duration = $this->calculateDuration($request->remarks, $request->submit_date);
+    // pass datePayment to helper so calculation is based on payment date when available
+    $duration = $this->calculateDuration($request->remarks, $request->submit_date, $datePayment);
 
     // dd($request->id_project);
 
@@ -203,7 +204,7 @@ class InvoiceController extends Controller
       'real_payment' => $realPayment,
     ]);
 
-    dd($request);
+    // dd($request);
 
     return redirect()->route('invoices.index')->with('success', 'Invoice berhasil disimpan.');
   }
@@ -300,19 +301,8 @@ class InvoiceController extends Controller
       $datePayment = $invoice->date_payment; // biarkan tetap
     }
 
-    // Hitung duration
-    if ($request->submit_date) {
-      if ($request->remarks === 'DONE PAYMENT') {
-        $duration = Carbon::parse($request->submit_date)
-          ->diffInDays($datePayment ?? Carbon::now());
-      } else {
-        $duration = Carbon::parse($request->submit_date)
-          ->diffInDays(Carbon::now());
-      }
-    } else {
-      $duration = null;
-    }
-    // dd($duration);
+    // Calculate duration using helper which handles future submit dates and bounds the value
+    $duration = $this->calculateDuration($request->remarks, $request->submit_date, $datePayment);
 
     $invoice->update([
       'id_project' => $request->id_project,
@@ -326,8 +316,8 @@ class InvoiceController extends Controller
       'remarks' => $request->remarks,
       'notes' => $request->notes,
       'amount' => $amount,
-      'vat_11' => $vat,
-      'pph_2' => $pph,
+      'vat' => $vat,
+      'pph' => $pph,
       'denda' => $denda,
       'payment_vat' => $paymentVat,
       'real_payment' => $realPayment,
@@ -360,12 +350,40 @@ class InvoiceController extends Controller
 
   private function calculateDuration($remarks, $submitDate)
   {
-    if (!$submitDate)
-      return null;
+    // This helper now accepts an optional 3rd param (datePayment) if provided.
+    // Signature fallback kept for compatibility.
+    $args = func_get_args();
+    $datePayment = $args[2] ?? null;
 
-    if ($remarks === 'DONE PAYMENT') {
-      return Carbon::parse($submitDate)->diffInDays(Carbon::now());
+    if (empty($submitDate)) {
+      return null;
     }
-    return Carbon::parse($submitDate)->diffInDays(Carbon::now());
+
+    try {
+      $submit = Carbon::parse($submitDate);
+    } catch (\Exception $e) {
+      return null;
+    }
+
+    // reference date is payment date when provided, otherwise now
+    try {
+      $reference = $datePayment ? Carbon::parse($datePayment) : Carbon::now();
+    } catch (\Exception $e) {
+      $reference = Carbon::now();
+    }
+
+    // Get signed difference (negative if submit is in the future relative to reference)
+    $signedDiff = $reference->diffInDays($submit, false);
+
+    // Do not allow negative durations (store 0 instead)
+    $duration = $signedDiff < 0 ? 0 : $signedDiff;
+
+    // Clamp to a reasonable upper bound to avoid DB column overflow (e.g., 10k days ~ 27 years)
+    $maxAllowed = 10000;
+    if ($duration > $maxAllowed) {
+      $duration = $maxAllowed;
+    }
+
+    return $duration;
   }
 }
