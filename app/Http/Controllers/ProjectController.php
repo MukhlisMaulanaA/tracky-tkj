@@ -151,19 +151,35 @@ class ProjectController extends Controller
   }
 
   // Endpoint untuk Select2
+  // public function select2Available(Request $request)
+  // {
+  //   $search = $request->get('q', '');
+
+  //   $projects = Project::query()
+  //     ->doesntHave('invoice') // hanya yang belum punya invoice
+  //     ->when($search, function ($query) use ($search) {
+  //       $query->where(function ($q) use ($search) {
+  //         $q->where('id_project', 'like', "%{$search}%")
+  //           ->orWhere('project_name', 'like', "%{$search}%");
+  //       });
+  //     })
+  //     ->limit(10)
+  //     ->get(['id_project', 'project_name']);
+
+  //   return response()->json(
+  //     $projects->map(function ($project) {
+  //       return [
+  //         'id' => $project->id_project,
+  //         'text' => "{$project->id_project} - {$project->project_name}"
+  //       ];
+  //     })
+  //   );
+  // }
+
   public function select2Available(Request $request)
   {
-    $search = $request->get('q', '');
-
     $projects = Project::query()
-      ->doesntHave('invoice') // hanya yang belum punya invoice
-      ->when($search, function ($query) use ($search) {
-        $query->where(function ($q) use ($search) {
-          $q->where('id_project', 'like', "%{$search}%")
-            ->orWhere('project_name', 'like', "%{$search}%");
-        });
-      })
-      ->limit(10)
+      ->doesntHave('invoice')
       ->get(['id_project', 'project_name']);
 
     return response()->json(

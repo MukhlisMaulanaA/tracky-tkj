@@ -124,11 +124,6 @@
             url: '{{ route('projects.select2') }}',
             dataType: 'json',
             delay: 250,
-            data: function(params) {
-              return {
-                q: params.term
-              };
-            },
             processResults: function(data) {
               return {
                 results: data
@@ -136,8 +131,13 @@
             }
           },
           placeholder: '-- Pilih Project --',
-          minimumInputLength: 1,
+          minimumInputLength: 0, // langsung muncul tanpa search
           width: '100%'
+        });
+
+        // Buka dropdown langsung fetch data
+        $('#id_project').one('focus', function() {
+          $(this).select2('open');
         });
 
         // Project selection handler
