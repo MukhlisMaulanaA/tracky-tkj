@@ -9,13 +9,18 @@ return new class extends Migration {
   {
     Schema::create('invoices', function (Blueprint $table) {
       $table->id();
-      $table->string('id_project', 20)->unique(); // foreign key relasi logis ke projects
+      $table->string('id_project', 20);
+      $table->foreign('id_project')
+        ->references('id_project')
+        ->on('projects')
+        ->onDelete('cascade');
+
       $table->string('year', 4);
       $table->date('create_date')->nullable();
       $table->date('submit_date')->nullable();
       $table->date('date_payment')->nullable();
-      $table->string('po_number')->nullable();
       $table->unsignedInteger('duration')->nullable();
+      $table->string('po_number')->nullable();
       $table->string('invoice_number')->nullable();
       $table->enum('remarks', ['DONE PAYMENT', 'WAITING PAYMENT', 'PROCES PAYMENT']);
       $table->text('notes')->nullable();
@@ -27,7 +32,6 @@ return new class extends Migration {
       $table->decimal('real_payment', 15, 2)->nullable();
       $table->timestamps();
 
-      // Indexes for better performance
       $table->index('year');
       $table->index('created_at');
     });

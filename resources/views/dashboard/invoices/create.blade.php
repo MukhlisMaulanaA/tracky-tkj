@@ -120,8 +120,28 @@
       document.addEventListener('DOMContentLoaded', function() {
         // Initialize Select2
         $('#id_project').select2({
+          ajax: {
+            url: '{{ route('projects.select2') }}',
+            dataType: 'json',
+            delay: 250,
+            data: function(params) {
+              return {
+                q: params.term
+              };
+            },
+            processResults: function(data) {
+              return {
+                results: $.map(data, function(item) {
+                  return {
+                    id: item.id_project,
+                    text: item.id_project + ' - ' + item.project_name
+                  };
+                })
+              };
+            }
+          },
           placeholder: '-- Pilih Project --',
-          allowClear: true,
+          minimumInputLength: 1,
           width: '100%'
         });
 

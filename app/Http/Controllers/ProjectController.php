@@ -89,7 +89,7 @@ class ProjectController extends Controller
       ->first();
 
     if ($last) {
-      $lastSeq = (int)substr($last->id_project, -3);
+      $lastSeq = (int) substr($last->id_project, -3);
       $seq = $lastSeq + 1;
     } else {
       $seq = 1;
@@ -118,39 +118,61 @@ class ProjectController extends Controller
    * Display the specified resource.
    */
   // For web route: show project detail page
-  public function show(Project $project, string $id_project)
+  public function show(Project $project)
   {
-    $project = Project::where('id_project', $id_project)->firstOrFail();
+    // dd($project);
+    // $project = Project::where('id_project', $id_project)->firstOrFail();
 
     $invoice = Invoice::where('id_project', $project->id_project)->first();
-    
+
     $briefingDate = $project->briefing_date ? Carbon::parse($project->briefing_date)->translatedFormat('d F Y') : '-';
     $submitDate = ($invoice && $invoice->submit_date) ? Carbon::parse($invoice->submit_date)->translatedFormat('d F Y') : '-';
-    
+
     return view('dashboard.projects.show', compact('project', 'invoice', 'briefingDate', 'submitDate'));
   }
 
   // For JSON request: return project data as JSON (e.g., for AJAX)
+  // Endpoint untuk ambil detail project berdasarkan ID
   public function showJson(Request $request, string $id_project)
   {
     $project = Project::where('id_project', $id_project)->firstOrFail();
-    $invoice = Invoice::where('id_project', $id_project)->first();
+
+    // Cek apakah sudah ada invoice untuk project ini
+    if (Invoice::where('id_project', $id_project)->exists()) {
+      return response()->json(['error' => 'Project sudah memiliki invoice'], 400);
+    }
 
     return response()->json([
       'customer_name' => $project->customer_name,
       'project_name' => $project->project_name,
       'nomor_po' => $project->nomor_po,
       'year' => $project->created_at ? $project->created_at->format('Y') : null,
-      'invoice' => $invoice,
     ]);
+  }
+
+  // Endpoint untuk Select2
+  public function select2(Request $request)
+  {
+    $projects = Project::leftJoin('invoices', 'projects.id_project', '=', 'invoices.id_project')
+      ->whereNull('invoices.id_project') // hanya yang belum ada di tabel invoices
+      ->when($request->q, function ($query) use ($request) {
+        $query->where('projects.id_project', 'like', "%{$request->q}%")
+          ->orWhere('projects.project_name', 'like', "%{$request->q}%");
+      })
+      ->orderBy('projects.id_project', 'asc')
+      ->select('projects.id_project', 'projects.project_name')
+      ->limit(20)
+      ->get();
+
+    return response()->json($projects);
   }
   /**
    * Show the form for editing the specified resource.
    */
-  public function edit($id_project)
+  public function edit(Project $project)
   {
     // Find project by id_project (not by auto-increment id)
-    $project = Project::where('id_project', $id_project)->firstOrFail();
+    // $project = Project::findOrFail($id_project);
     $remarksOptions = ['APPROVED', 'PROGRESS', 'PENDING', 'CANCEL'];
 
     return view('dashboard.projects.edit', compact('project', 'remarksOptions'));
@@ -169,9 +191,9 @@ class ProjectController extends Controller
   /**
    * Remove the specified resource from storage.
    */
-  public function destroy(Project $project, string $id_project)
+  public function destroy(Project $project)
   {
-    $project = Project::where('id_project', $id_project);
+    // $project = Project::where('id_project', $id_project);
     $project->delete();
     return redirect()->route('projects.index')->with('success', 'Project berhasil dihapus.');
   }

@@ -17,7 +17,7 @@
 
         <!-- Right Side Actions -->
         <div class="flex items-center space-x-4">
-          <a href="{{ route('projects.edit', $project->id) }}"
+          <a href="{{ route('projects.edit', $project->id_project) }}"
             class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center space-x-2">
             <i class="fas fa-edit text-sm"></i>
             <span>Edit Proyek</span>

@@ -10,7 +10,7 @@
     </header>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <form action="{{ route('projects.update', $project->id) }}" method="POST">
+      <form action="{{ route('projects.update', $project->id_project) }}" method="POST">
         @csrf
         @method('PUT')
 

@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
+
+  protected $primaryKey = 'id_project';
+  public $incrementing = false;
+  protected $keyType = 'string';
+
   protected $fillable = [
     'id_project',
     'customer_name',
@@ -18,8 +23,13 @@ class Project extends Model
     'notes',
   ];
 
-  // Non-incrementing primary key (optional)
-  public $incrementing = false;
-  // protected $primaryKey = 'id_project';
-  protected $keyType = 'string';
+  public function getRouteKeyName()
+  {
+    return 'id_project';
+  }
+
+  public function invoice()
+  {
+    return $this->hasOne(Invoice::class, 'id_project', 'id_project');
+  }
 }
