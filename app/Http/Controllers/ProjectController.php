@@ -82,10 +82,10 @@ class ProjectController extends Controller
     $monthIndex = (int) date('n'); // 1..12
     $monthLetter = chr(ord('A') + ($monthIndex - 1));
 
-    // Find last sequence for current YY and month letter
+    // Find last sequence for current YY and month letter using id_project only
     $prefix = sprintf('P%s%s', $yearShort, $monthLetter);
     $last = Project::where('id_project', 'like', $prefix . '%')
-      ->orderBy('id', 'desc')
+      ->orderBy('id_project', 'desc')
       ->first();
 
     if ($last) {
@@ -150,7 +150,7 @@ class ProjectController extends Controller
     ]);
   }
 
-  // Endpoint untuk Select2
+  // Endpoint untuk Select2 manual with search firstly
   // public function select2Available(Request $request)
   // {
   //   $search = $request->get('q', '');
