@@ -37,8 +37,9 @@ Route::middleware('auth')->group(function () {
   });
   Route::get('/invoices/project/{project}', [InvoiceController::class, 'showByProject'])->name('invoices.show.project');
 
-  Route::get('/projects/{project}/detail', [ProjectController::class, 'showJson']);
-  Route::get('/projects/select2', [ProjectController::class, 'select2'])->name('projects.select2');
+  Route::get('/projects/{project}/detail', [ProjectController::class, 'showJson'])->name('showJson');
+  Route::get('/projects/select2', [ProjectController::class, 'select2Available'])
+    ->name('projects.select2');
   Route::get('/projects/{project}/json', [ProjectController::class, 'showJson'])->name('projects.show.json');
 
 

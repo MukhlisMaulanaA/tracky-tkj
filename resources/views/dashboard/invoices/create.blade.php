@@ -131,12 +131,7 @@
             },
             processResults: function(data) {
               return {
-                results: $.map(data, function(item) {
-                  return {
-                    id: item.id_project,
-                    text: item.id_project + ' - ' + item.project_name
-                  };
-                })
+                results: data
               };
             }
           },

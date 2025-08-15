@@ -151,21 +151,31 @@ class ProjectController extends Controller
   }
 
   // Endpoint untuk Select2
-  public function select2(Request $request)
+  public function select2Available(Request $request)
   {
-    $projects = Project::leftJoin('invoices', 'projects.id_project', '=', 'invoices.id_project')
-      ->whereNull('invoices.id_project') // hanya yang belum ada di tabel invoices
-      ->when($request->q, function ($query) use ($request) {
-        $query->where('projects.id_project', 'like', "%{$request->q}%")
-          ->orWhere('projects.project_name', 'like', "%{$request->q}%");
-      })
-      ->orderBy('projects.id_project', 'asc')
-      ->select('projects.id_project', 'projects.project_name')
-      ->limit(20)
-      ->get();
+    $search = $request->get('q', '');
 
-    return response()->json($projects);
+    $projects = Project::query()
+      ->doesntHave('invoice') // hanya yang belum punya invoice
+      ->when($search, function ($query) use ($search) {
+        $query->where(function ($q) use ($search) {
+          $q->where('id_project', 'like', "%{$search}%")
+            ->orWhere('project_name', 'like', "%{$search}%");
+        });
+      })
+      ->limit(10)
+      ->get(['id_project', 'project_name']);
+
+    return response()->json(
+      $projects->map(function ($project) {
+        return [
+          'id' => $project->id_project,
+          'text' => "{$project->id_project} - {$project->project_name}"
+        ];
+      })
+    );
   }
+
   /**
    * Show the form for editing the specified resource.
    */
