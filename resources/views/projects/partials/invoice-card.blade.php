@@ -111,7 +111,7 @@
             <div class="p-4 bg-gray-50 border rounded-md text-center">
               <p class="text-gray-600 text-sm mb-2">Final Payment</p>
               <p class="text-2xl font-bold text-green-600 mb-1">Rp{{ number_format($realPayment, 0, ',', '.') }}</p>
-              <p class="text-sm text-gray-500">Paid on {{ $invoice->date_payment ?? '-' }}</p>
+              <p class="text-sm text-gray-500">Paid on {{ $paymentDate ?? '-' }}</p>
             </div>
           </div>
 

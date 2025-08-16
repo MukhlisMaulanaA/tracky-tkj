@@ -32,21 +32,21 @@
     <!-- Tanggal Submit -->
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Submit</label>
-      <input type="date" name="submit_date" value="{{ old('submit_date', optional($project->submit_date)->format('Y-m-d') ?? '') }}"
+      <input type="date" name="submit_date" value="{{ old('submit_date', $project->submit_date) }}"
         class="form-input w-full border-gray-300 rounded-md">
     </div>
 
     <!-- Tanggal Briefing -->
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Briefing</label>
-      <input type="date" name="briefing_date" value="{{ old('briefing_date', optional($project->briefing_date)->format('Y-m-d') ?? '') }}"
+      <input type="date" name="briefing_date" value="{{ old('briefing_date', $project->briefing_date)  }}"
         class="form-input w-full border-gray-300 rounded-md">
     </div>
 
     <!-- Deadline -->
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-1">Deadline</label>
-      <input type="date" name="deadline" value="{{ old('deadline', optional($project->deadline)->format('Y-m-d') ?? '') }}"
+      <input type="date" name="deadline" value="{{ old('deadline', $project->deadline) }}"
         class="form-input w-full border-gray-300 rounded-md">
     </div>
 

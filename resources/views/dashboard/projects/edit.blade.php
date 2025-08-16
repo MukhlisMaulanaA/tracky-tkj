@@ -14,7 +14,7 @@
         @csrf
         @method('PUT')
 
-        @include('dashboard.projects.partials.form-fields')
+        @include('dashboard.projects.partials.form-fields', ['project' => $project])
 
         <div class="mt-6 flex justify-end space-x-3">
           <a href="{{ route('projects.index') }}" class="px-4 py-2 border border-gray-300 rounded-md text-sm">Cancel</a>

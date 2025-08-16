@@ -127,8 +127,9 @@ class ProjectController extends Controller
 
     $briefingDate = $project->briefing_date ? Carbon::parse($project->briefing_date)->translatedFormat('d F Y') : '-';
     $submitDate = ($invoice && $invoice->submit_date) ? Carbon::parse($invoice->submit_date)->translatedFormat('d F Y') : '-';
+    $paymentDate = ($invoice && $invoice->date_payment) ? Carbon::parse($invoice->date_payment)->translatedFormat('d F Y') : '-';
 
-    return view('dashboard.projects.show', compact('project', 'invoice', 'briefingDate', 'submitDate'));
+    return view('dashboard.projects.show', compact('project', 'invoice', 'briefingDate', 'submitDate', 'paymentDate'));
   }
 
   // For JSON request: return project data as JSON (e.g., for AJAX)
@@ -197,6 +198,7 @@ class ProjectController extends Controller
    */
   public function edit(Project $project)
   {
+    // dd($project);
     // Find project by id_project (not by auto-increment id)
     // $project = Project::findOrFail($id_project);
     $remarksOptions = ['APPROVED', 'PROGRESS', 'PENDING', 'CANCEL'];
