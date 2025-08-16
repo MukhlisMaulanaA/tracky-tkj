@@ -171,10 +171,11 @@ class InvoiceController extends Controller
     // Bersihkan nilai rupiah ke angka
     $amount = (float) str_replace(',', '', $request->amount);
     $pphPercent = (float) $request->pph_percent;
+    $vatPercent = (float) $request->vat_percent;
     $denda = $request->denda ? (float) str_replace(',', '', $request->denda) : 0;
 
     // Hitung nilai-nilai
-    $vat = round($amount * 0.11);
+    $vat = round($amount * ($vatPercent / 100));
     $pph = round($amount * ($pphPercent / 100));
     $paymentVat = $amount + $vat;
     $realPayment = $amount - $pph - $denda;
