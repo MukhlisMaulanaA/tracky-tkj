@@ -128,9 +128,28 @@ class InvoiceController extends Controller
    */
   public function index(Request $request): View
   {
+    // Hitung Paid Amount (Done Payment)
+    $paidAmount = Invoice::where('remarks', 'DONE PAYMENT')
+      ->sum('real_payment');
+
+    // Hitung Pending Amount (selain Done Payment)
+    $pendingAmount = Invoice::where('remarks', '!=', 'DONE PAYMENT')
+      ->sum('real_payment');
+
+    // Hitung Total Amount (Paid + Pending)
+    $totalAmount = $paidAmount + $pendingAmount;
+
+    // Ambil semua data invoice untuk tabel
     $invoices = Invoice::all();
-    return view('dashboard.invoices.index', compact('invoices'));
+
+    return view('dashboard.invoices.index', compact(
+      'invoices',
+      'paidAmount',
+      'pendingAmount',
+      'totalAmount'
+    ));
   }
+
 
   /**
    * Show the form for creating a new resource.
