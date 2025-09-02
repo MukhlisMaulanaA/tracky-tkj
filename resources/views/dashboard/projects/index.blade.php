@@ -17,6 +17,20 @@
       </div>
     </div>
 
+    <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+
+      <x-project.stat-card title="Total" :count="$totalCount" color="black" icon="gallery-vertical-end"/>
+
+      <x-project.stat-card title="Approved" :count="$approvedCount" color="blue" icon="check-check"/>
+
+      <x-project.stat-card title="Progress" :count="$progressCount" color="green" icon="loader"/>
+
+      <x-project.stat-card title="Pending" :count="$pendingCount" color="yellow" icon="hourglass"/>
+
+      <x-project.stat-card title="Cancel" :count="$cancelCount" color="red" icon="ban"/>
+
+    </div>
+
     <div class="mb-4">
       <label class="text-sm font-medium text-gray-700 mr-2">Filter Status:</label>
       <select id="filter-remark" class="border border-gray-300 rounded px-3 py-1 text-sm">

@@ -26,7 +26,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <x-invoice.stat-card title="Total Amount" :value="'Rp' . number_format($totalAmount, 0, ',', '.')" color="blue" />
       <x-invoice.stat-card title="Paid Amount" :value="'Rp' . number_format($paidAmount, 0, ',', '.')" color="green" />
-      <x-invoice.stat-card title="Pending Amount" :value="'Rp' . number_format($pendingAmount, 0, ',', '.')" color="yellow" />
+      <x-invoice.stat-card title="Pending Amount" :value="'Rp' . number_format($pendingAmount, 0, ',', '.')" color="black" />
     </div>
 
     <div class="mb-4">

@@ -13,10 +13,27 @@ class ProjectController extends Controller
   /**
    * Display a listing of the resource.
    */
-  public function index(Request $request)
+  public function index()
   {
-    return view('dashboard.projects.index');
+    $projects = Project::all();
+
+    $totalCount = $projects->count();
+    $approvedCount = $projects->count() ? $projects->where('remarks', 'APPROVED')->count() : '-';
+    $progressCount = $projects->where('remarks', 'PROGRESS')->count();
+    $pendingCount = $projects->where('remarks', 'PENDING')->count();
+    $cancelCount = $projects->where('remarks', 'CANCEL')->count();
+
+    return view('dashboard.projects.index', compact(
+      'projects',
+      'totalCount',
+      'approvedCount',
+      'progressCount',
+      'pendingCount',
+      'cancelCount'
+    ));
   }
+
+
   /**
    * Datatable endpoint for projects
    */
