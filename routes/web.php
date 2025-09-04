@@ -59,6 +59,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [PaymentController::class, 'index'])->name('index');
     Route::get('create', [PaymentController::class, 'create'])->name('create');
     Route::post('/', [PaymentController::class, 'store'])->name('store');
+
+    
+    // API untuk select2 & detail invoice
+    Route::get('invoices/select2', [PaymentController::class, 'invoiceSelect2'])->name('invoices.select2');
+    Route::get('invoices/{invoice}/detail', [PaymentController::class, 'invoiceDetail'])->name('invoices.detail');
   });
 
 

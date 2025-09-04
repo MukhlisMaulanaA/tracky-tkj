@@ -27,6 +27,42 @@ class PaymentController extends Controller
 
   }
 
+  public function invoiceSelect2(Request $request)
+  {
+    $term = $request->get('q', '');
+
+    $invoices = Invoice::with('project')
+      ->where('remarks', '!=', 'DONE PAYMENT') // filter hanya yang belum lunas
+      ->when($term, function ($q) use ($term) {
+        $q->where('invoice_number', 'like', "%{$term}%")
+          ->orWhere('id_invoice', 'like', "%{$term}%")
+          ->orWhereHas('project', function ($p) use ($term) {
+            $p->where('customer_name', 'like', "%{$term}%");
+          });
+      })
+      ->limit(20)
+      ->get();
+
+    return response()->json([
+      'results' => $invoices->map(function ($inv) {
+        return [
+          'id' => $inv->id_invoice,
+          'text' => "{$inv->id_invoice} - {$inv->invoice_number} ({$inv->project->customer_name})"
+        ];
+      })
+    ]);
+  }
+
+  public function invoiceDetail(Invoice $invoice)
+  {
+    $invoice->load('project');
+    return response()->json([
+      'id_invoice' => $invoice->id_invoice,
+      'invoice_number' => $invoice->invoice_number,
+      'customer_name' => $invoice->project->customer_name ?? '-',
+    ]);
+  }
+
   /**
    * Store a newly created resource in storage.
    */
