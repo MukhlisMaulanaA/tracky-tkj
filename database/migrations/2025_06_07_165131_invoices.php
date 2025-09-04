@@ -8,7 +8,7 @@ return new class extends Migration {
   public function up()
   {
     Schema::create('invoices', function (Blueprint $table) {
-      $table->id();
+      $table->string('id_invoice', 20)->primary(); // Primary Key string
       $table->string('id_project', 20);
       $table->foreign('id_project')
         ->references('id_project')

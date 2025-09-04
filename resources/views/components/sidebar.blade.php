@@ -21,6 +21,16 @@
               ['name' => 'Daftar Invoice', 'href' => route('invoices.index'), 'icon' => 'list'],
           ],
       ],
+      [
+          'name' => 'Payment Tracker',
+          'href' => route('payments.index'),
+          'icon' => 'banknote',
+          'hasSubmenu' => true,
+          'submenu' => [
+              ['name' => 'Tambah Payment', 'href' => route('payments.create'), 'icon' => 'plus'],
+              ['name' => 'Daftar Payment', 'href' => route('payments.index'), 'icon' => 'list'],
+          ],
+      ],
       ['name' => 'Salary Tracker', 'href' => route('salaries.index'), 'icon' => 'dollar-sign'],
   ];
 @endphp

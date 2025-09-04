@@ -46,7 +46,7 @@
           <thead class="bg-gray-50">
             <tr>
               <th>No.</th>
-              <th>ID Project</th>
+              <th>ID Invoice</th>
               <th>Project</th>
               <th>Customer</th>
               <th class="px-4 py-2 w-44">Date Details</th>
@@ -86,7 +86,7 @@
               searchable: false
             },
             {
-              data: 'id_project'
+              data: 'id_invoice',
             },
             {
               data: 'project_name',

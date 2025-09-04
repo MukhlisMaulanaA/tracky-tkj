@@ -82,7 +82,7 @@ class InvoiceController extends Controller
       })
       ->addColumn('action', function ($row) {
         $projectId = $row->project->id_project ?? null;
-        $invoiceId = $row->id;
+        $invoiceId = $row->id_invoice;
 
         if (!$projectId)
           return '-';

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\DashboardController;
@@ -52,6 +53,14 @@ Route::middleware('auth')->group(function () {
     Route::put('/{project}', [ProjectController::class, 'update'])->name('update');
     Route::delete('/{project}', [ProjectController::class, 'destroy'])->name('destroy');
   });
+
+  // routes/web.php
+  Route::prefix('payments')->name('payments.')->group(function () {
+    Route::get('/', [PaymentController::class, 'index'])->name('index');
+    Route::get('create', [PaymentController::class, 'create'])->name('create');
+    Route::post('/', [PaymentController::class, 'store'])->name('store');
+  });
+
 
 
 });
