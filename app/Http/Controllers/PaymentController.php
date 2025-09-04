@@ -66,45 +66,49 @@ class PaymentController extends Controller
   /**
    * Store a newly created resource in storage.
    */
-  public function store(Request $request, Invoice $invoice)
+  public function store(Request $request)
   {
     $request->validate([
-      'amount' => 'required',
+      'id_invoice' => 'required|exists:invoices,id_invoice',
+      'amount' => 'required|numeric|min:1',
       'payment_date' => 'required|date',
-      'method' => 'nullable|string|max:50',
+      'pay_method' => 'nullable|string|max:50',
       'reference' => 'nullable|string|max:100',
       'notes' => 'nullable|string',
     ]);
 
-    // Sanitize nominal (hapus koma / titik dari format rupiah)
-    $amount = (float) str_replace([',', '.'], '', $request->amount);
-
-    // Buat payment
-    $invoice->payments()->create([
-      'amount' => $amount,
+    // Simpan data payment (id_payment otomatis di-generate di model)
+    $payment = Payment::create([
+      'id_invoice' => $request->id_invoice,
+      'amount' => $request->amount,
       'payment_date' => $request->payment_date,
       'pay_method' => $request->pay_method,
       'reference' => $request->reference,
       'notes' => $request->notes,
     ]);
 
-    // Update remarks otomatis
-    $totalPaid = $invoice->payments()->sum('amount');
-    $target = (float) $invoice->real_payment;
+    // Cari invoice terkait
+    $invoice = Invoice::where('id_invoice', $request->id_invoice)->firstOrFail();
 
-    if ($totalPaid <= 0) {
+    // Hitung total pembayaran invoice
+    $totalPaid = $invoice->payments()->sum('amount');
+
+    // Update remark otomatis
+    if ($totalPaid == 0) {
       $invoice->remarks = 'WAITING PAYMENT';
-    } elseif ($totalPaid < $target) {
-      $percentage = $target > 0 ? round(($totalPaid / $target) * 100) : 0;
+    } elseif ($totalPaid < $invoice->real_payment) {
+      $percentage = round(($totalPaid / $invoice->real_payment) * 100);
       $invoice->remarks = "PROCES PAYMENT {$percentage}%";
     } else {
       $invoice->remarks = 'DONE PAYMENT';
-      $invoice->date_payment = $request->payment_date;
+      $invoice->date_payment = now(); // otomatis isi tanggal pembayaran selesai
     }
+
     $invoice->save();
 
-    return redirect()->route('payments.index')
-      ->with('success', 'Payment berhasil ditambahkan.');
+    return redirect()
+      ->route('payments.index')
+      ->with('success', "Payment {$payment->id_payment} berhasil ditambahkan untuk Invoice {$invoice->id_invoice}");
   }
 
 
