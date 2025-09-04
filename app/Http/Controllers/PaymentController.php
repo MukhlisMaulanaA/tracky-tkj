@@ -69,53 +69,41 @@ class PaymentController extends Controller
   public function store(Request $request, Invoice $invoice)
   {
     $request->validate([
-      'amount' => 'required|numeric|min:1',
+      'amount' => 'required',
       'payment_date' => 'required|date',
       'method' => 'nullable|string|max:50',
       'reference' => 'nullable|string|max:100',
       'notes' => 'nullable|string',
     ]);
 
-    // Hitung total yang sudah dibayar
-    $totalPaid = $invoice->payments()->sum('amount');
-    $outstanding = max(0, ($invoice->real_payment ?? 0) - $totalPaid);
+    // Sanitize nominal (hapus koma / titik dari format rupiah)
+    $amount = (float) str_replace([',', '.'], '', $request->amount);
 
-    if ($outstanding <= 0 || $invoice->remarks === 'DONE PAYMENT') {
-      return back()->withErrors(['amount' => 'Invoice sudah lunas.'])->withInput();
-    }
-    if ($request->amount > $outstanding) {
-      return back()->withErrors(['amount' => 'Nominal melebihi sisa tagihan (Rp' . number_format($outstanding, 0, ',', '.') . ').'])->withInput();
-    }
-
-    // dd($request);
-
-    // Buat payment (FK id_invoice diisi otomatis dari relasi)
+    // Buat payment
     $invoice->payments()->create([
-      'amount' => $request->amount,
+      'amount' => $amount,
       'payment_date' => $request->payment_date,
       'pay_method' => $request->pay_method,
       'reference' => $request->reference,
       'notes' => $request->notes,
     ]);
 
-    // Recalculate status
-    $newTotalPaid = $invoice->payments()->sum('amount');
-    $target = (float) ($invoice->real_payment ?? 0);
+    // Update remarks otomatis
+    $totalPaid = $invoice->payments()->sum('amount');
+    $target = (float) $invoice->real_payment;
 
-    if ($newTotalPaid <= 0) {
+    if ($totalPaid <= 0) {
       $invoice->remarks = 'WAITING PAYMENT';
-    } elseif ($newTotalPaid < $target) {
-      $percentage = $target > 0 ? round(($newTotalPaid / $target) * 100) : 0;
+    } elseif ($totalPaid < $target) {
+      $percentage = $target > 0 ? round(($totalPaid / $target) * 100) : 0;
       $invoice->remarks = "PROCES PAYMENT {$percentage}%";
     } else {
       $invoice->remarks = 'DONE PAYMENT';
-      $invoice->date_payment = $request->payment_date; // opsional: set tanggal lunas
+      $invoice->date_payment = $request->payment_date;
     }
-
     $invoice->save();
 
-    return redirect()
-      ->route('payments.index') // pastikan route ini ada; kalau belum, arahkan ke create/detail
+    return redirect()->route('payments.index')
       ->with('success', 'Payment berhasil ditambahkan.');
   }
 

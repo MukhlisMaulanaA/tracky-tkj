@@ -23,7 +23,7 @@
       <!-- Form pembayaran -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Jumlah Pembayaran</label>
-        <input type="number" step="0.01" name="amount" required
+        <input type="text" step="0.01" name="amount" data-type="rupiah" required
           class="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
       </div>
 
@@ -90,6 +90,78 @@
             $('#detail-customer').text(data.customer_name);
             $('#invoice-details').removeClass('hidden');
           });
+      });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // format angka: "1234567" -> "1,234,567"
+      function formatNumberWithCommas(strDigits) {
+        if (!strDigits) return '';
+        return strDigits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      }
+
+      // cari semua input yang butuh format rupiah
+      const rupiahInputs = document.querySelectorAll('input[data-type="rupiah"]');
+
+      rupiahInputs.forEach(function(input) {
+        // format initial value (jika ada)
+        const initialDigits = (input.value || '').toString().replace(/[^\d]/g, '');
+        if (initialDigits !== '') {
+          input.value = formatNumberWithCommas(initialDigits);
+        } else {
+          input.value = '';
+        }
+
+        // handle typing (preserve caret using count of digits before caret)
+        input.addEventListener('input', function(e) {
+          const raw = input.value;
+          // jumlah digit di kiri kursor (sebelum format)
+          const cursorPos = input.selectionStart || 0;
+          const digitsBeforeCursor = raw.slice(0, cursorPos).replace(/[^\d]/g, '').length;
+
+          // strip non-digit -> format
+          const onlyDigits = raw.replace(/[^\d]/g, '');
+          const formatted = formatNumberWithCommas(onlyDigits);
+
+          input.value = formatted;
+
+          // restore caret at posisi berdasarkan jumlah digit di kiri
+          let pos = 0;
+          let digitsSeen = 0;
+          while (pos < formatted.length && digitsSeen < digitsBeforeCursor) {
+            if (/\d/.test(formatted[pos])) digitsSeen++;
+            pos++;
+          }
+          // set caret (safely)
+          try {
+            input.setSelectionRange(pos, pos);
+          } catch (err) {
+            // ignore if not supported
+          }
+        });
+
+        // handle paste: accept numbers only
+        input.addEventListener('paste', function(e) {
+          e.preventDefault();
+          const text = (e.clipboardData || window.clipboardData).getData('text') || '';
+          const digits = text.replace(/[^\d]/g, '');
+          input.value = formatNumberWithCommas(digits);
+          // place caret at end
+          try {
+            input.setSelectionRange(input.value.length, input.value.length);
+          } catch (e) {}
+        });
+
+        // If inside a form, sanitize before submit (replace non-digits so server receives plain digits)
+        const form = input.closest('form');
+        if (form) {
+          form.addEventListener('submit', function() {
+            // replace every rupiah input value with digits-only (no commas)
+            form.querySelectorAll('input[data-type="rupiah"]').forEach(function(r) {
+              r.value = (r.value || '').toString().replace(/[^\d]/g, '') || '0';
+            });
+          });
+        }
       });
     });
   </script>
