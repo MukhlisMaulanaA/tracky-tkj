@@ -10,7 +10,7 @@
       <!-- Select2 Invoice -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Invoice</label>
-        <select id="invoice_id" name="invoice_id" class="w-full"></select>
+        <select id="id_invoice" name="id_invoice" class="w-full"></select>
       </div>
 
       <!-- Detail singkat invoice -->
@@ -35,7 +35,7 @@
 
       <div>
         <label class="block text-sm font-medium text-gray-700">Metode Pembayaran</label>
-        <input type="text" name="method"
+        <input type="text" name="pay_method"
           class="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
       </div>
 
@@ -63,7 +63,7 @@
 @push('scripts')
   <script>
     $(function() {
-      $('#invoice_id').select2({
+      $('#id_invoice').select2({
         ajax: {
           url: '{{ route('payments.invoices.select2') }}',
           dataType: 'json',
@@ -78,7 +78,7 @@
         width: '100%'
       });
 
-      $('#invoice_id').on('change', function() {
+      $('#id_invoice').on('change', function() {
         const id_invoice = $(this).val();
         if (!id_invoice) return $('#invoice-details').addClass('hidden');
 

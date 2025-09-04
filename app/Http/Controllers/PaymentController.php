@@ -76,6 +76,20 @@ class PaymentController extends Controller
       'notes' => 'nullable|string',
     ]);
 
+    // Hitung total yang sudah dibayar
+    $totalPaid = $invoice->payments()->sum('amount');
+    $outstanding = max(0, ($invoice->real_payment ?? 0) - $totalPaid);
+
+    if ($outstanding <= 0 || $invoice->remarks === 'DONE PAYMENT') {
+      return back()->withErrors(['amount' => 'Invoice sudah lunas.'])->withInput();
+    }
+    if ($request->amount > $outstanding) {
+      return back()->withErrors(['amount' => 'Nominal melebihi sisa tagihan (Rp' . number_format($outstanding, 0, ',', '.') . ').'])->withInput();
+    }
+
+    // dd($request);
+
+    // Buat payment (FK id_invoice diisi otomatis dari relasi)
     $invoice->payments()->create([
       'amount' => $request->amount,
       'payment_date' => $request->payment_date,
@@ -84,20 +98,24 @@ class PaymentController extends Controller
       'notes' => $request->notes,
     ]);
 
-    // update remarks invoice otomatis
-    $totalPaid = $invoice->payments()->sum('amount');
-    if ($totalPaid == 0) {
+    // Recalculate status
+    $newTotalPaid = $invoice->payments()->sum('amount');
+    $target = (float) ($invoice->real_payment ?? 0);
+
+    if ($newTotalPaid <= 0) {
       $invoice->remarks = 'WAITING PAYMENT';
-    } elseif ($totalPaid < $invoice->real_payment) {
-      $percentage = round(($totalPaid / $invoice->real_payment) * 100);
+    } elseif ($newTotalPaid < $target) {
+      $percentage = $target > 0 ? round(($newTotalPaid / $target) * 100) : 0;
       $invoice->remarks = "PROCES PAYMENT {$percentage}%";
     } else {
       $invoice->remarks = 'DONE PAYMENT';
+      $invoice->date_payment = $request->payment_date; // opsional: set tanggal lunas
     }
+
     $invoice->save();
 
     return redirect()
-      // ->route('payments.show', $invoice->id_project)
+      ->route('payments.index') // pastikan route ini ada; kalau belum, arahkan ke create/detail
       ->with('success', 'Payment berhasil ditambahkan.');
   }
 
