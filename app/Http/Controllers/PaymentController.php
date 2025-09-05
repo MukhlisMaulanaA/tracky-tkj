@@ -7,6 +7,8 @@ use App\Models\Payment;
 use Illuminate\Http\Request;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Carbon;
 
 class PaymentController extends Controller
 {
@@ -15,7 +17,56 @@ class PaymentController extends Controller
    */
   public function index()
   {
-    //
+    // Hitung total pembayaran
+    $totalPayments = Payment::sum('amount');
+
+    // Pembayaran untuk invoice yang sudah lunas (DONE PAYMENT)
+    $completedPayments = Payment::whereHas('invoice', function ($q) {
+      $q->where('remarks', 'DONE PAYMENT');
+    })->sum('amount');
+
+    $pendingPayments = $totalPayments - $completedPayments;
+
+    return view('dashboard.payments.index', compact('totalPayments', 'completedPayments', 'pendingPayments'));
+  }
+
+  /**
+   * Datatable endpoint for payments (server side)
+   */
+  public function datatable(Request $request)
+  {
+    $query = Payment::with('invoice.project');
+
+  // no status filter on payments; status lives on invoices only
+
+    return DataTables::of($query)
+      ->addColumn('invoice_number', function ($row) {
+        return $row->invoice->invoice_number ?? '-';
+      })
+      ->editColumn('amount', function ($row) {
+        return 'Rp' . number_format($row->amount, 0, ',', '.');
+      })
+      ->editColumn('payment_date', function ($row) {
+        try {
+          // include hour:minute to show precise payment time
+          return Carbon::parse($row->payment_date)->translatedFormat('d F Y H:i');
+        } catch (\Exception $e) {
+          return $row->payment_date;
+        }
+      })
+      ->addColumn('action', function ($row) {
+        $projectId = $row->invoice->project->id_project ?? null;
+        if (!$projectId) return '-';
+
+        $showUrl = route('invoices.show.project', ['project' => $projectId]);
+
+        return '<a href="' . $showUrl . '" title="Lihat Invoice" class="bg-blue-50 p-1 rounded inline-flex items-center">'
+          . '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">'
+          . '<path d="M9 12h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2h-6.586A2 2 0 008.586 4L6 6.586A2 2 0 004 8.586V17a2 2 0 002 2h8a2 2 0 002-2v-3" />'
+          . '</svg></a>';
+      })
+  ->rawColumns(['action'])
+      ->make(true);
   }
 
   /**
@@ -93,14 +144,21 @@ class PaymentController extends Controller
     // Hitung total pembayaran invoice
     $totalPaid = $invoice->payments()->sum('amount');
 
-    // Update remark otomatis
     if ($totalPaid == 0) {
+      // Belum ada pembayaran
       $invoice->remarks = 'WAITING PAYMENT';
+      $invoice->progress = 0;
+
     } elseif ($totalPaid < $invoice->real_payment) {
+      // Pembayaran sebagian
       $percentage = round(($totalPaid / $invoice->real_payment) * 100);
-      $invoice->remarks = "PROCES PAYMENT {$percentage}%";
+      $invoice->remarks = 'PROCES PAYMENT';
+      $invoice->progress = $percentage;
+
     } else {
+      // Sudah lunas
       $invoice->remarks = 'DONE PAYMENT';
+      $invoice->progress = 100;
       $invoice->date_payment = now(); // otomatis isi tanggal pembayaran selesai
     }
 

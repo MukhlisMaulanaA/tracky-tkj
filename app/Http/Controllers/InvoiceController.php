@@ -20,49 +20,51 @@ class InvoiceController extends Controller
   {
     $query = Invoice::with('project');
 
+    // 🔹 Filter remark berdasarkan status + progress
     if ($request->has('remark_filter') && $request->remark_filter !== '') {
       $keyword = strtoupper($request->remark_filter);
+
       if ($keyword === 'DONE') {
-        $query->whereRaw("UPPER(remarks) = 'DONE PAYMENT'");
+        $query->where('status', 'DONE')
+          ->where('progress', 100);
       } elseif ($keyword === 'WAITING') {
-        $query->whereRaw("UPPER(remarks) LIKE 'WAITING PAYMENT%'");
+        $query->where('status', 'WAITING')
+          ->where('progress', 0);
       } elseif ($keyword === 'PROCES') {
-        $query->whereRaw("UPPER(remarks) LIKE 'PROCES PAYMENT%'");
+        $query->where('status', 'PROCESS')
+          ->whereBetween('progress', [1, 99]);
       }
     }
 
     return DataTables::of($query)
       ->addColumn('remarks', function ($row) {
-        $text = strtoupper($row->remarks ?? '');
-        $label = 'bg-gray-100 text-gray-700 border-gray-300'; // default
-  
-        if ($text === 'DONE PAYMENT') {
-          $label = 'bg-green-100 text-green-800 border-green-300';
-        } elseif (Str::contains($text, 'WAITING PAYMENT')) {
+        if ($row->remarks === 'WAITING PAYMENT') {
+          $text = 'WAITING PAYMENT';
           $label = 'bg-red-100 text-red-800 border-red-300';
-        } elseif (Str::contains($text, 'PROCES PAYMENT')) {
+        } elseif ($row->remarks === 'PROCES PAYMENT') {
+          $text = "PROCES PAYMENT {$row->progress}%"; // 🔹 progress ikut disisipkan
           $label = 'bg-yellow-100 text-yellow-800 border-yellow-300';
+        } elseif ($row->remarks === 'DONE PAYMENT') {
+          $text = 'DONE PAYMENT';
+          $label = 'bg-green-100 text-green-800 border-green-300';
+        } else {
+          $text = '-';
+          $label = 'bg-gray-100 text-gray-700 border-gray-300';
         }
 
         return '<span class="inline-block px-3 py-1 rounded text-xs font-semibold border ' . $label . '">'
-          . e($row->remarks)
+          . e($text)
           . '</span><br><small class="text-gray-500">Durasi: ' . ($row->duration ?? 0) . ' hari</small>';
       })
       ->addColumn('id_project', fn($row) => $row->project->id_project ?? '-')
-      ->addColumn(
-        'customer_name',
-        function ($row) {
-          $customerName = $row->project->customer_name ?? '-';
-          return "<div style='min-width: 180px; white-space: normal;'>{$customerName}</div>";
-        }
-      )
-      ->addColumn(
-        'project_name',
-        function ($row) {
-          $projectName = $row->project->project_name ?? '-';
-          return "<div style='min-width: 200px; white-space: normal;'>{$projectName}</div>";
-        }
-      )
+      ->addColumn('customer_name', function ($row) {
+        $customerName = $row->project->customer_name ?? '-';
+        return "<div style='min-width: 180px; white-space: normal;'>{$customerName}</div>";
+      })
+      ->addColumn('project_name', function ($row) {
+        $projectName = $row->project->project_name ?? '-';
+        return "<div style='min-width: 200px; white-space: normal;'>{$projectName}</div>";
+      })
       ->editColumn('amount', fn($row) => 'Rp' . number_format($row->amount, 0, ',', '.'))
       ->editColumn('vat', fn($row) => 'Rp' . number_format($row->vat, 0, ',', '.'))
       ->editColumn('pph', fn($row) => 'Rp' . number_format($row->pph, 0, ',', '.'))
@@ -75,10 +77,10 @@ class InvoiceController extends Controller
         $p = $row->date_payment ? Carbon::parse($row->date_payment)->translatedFormat('d F Y') : '-';
 
         return "<div class='text-sm leading-5 w-44'>
-              <div><strong>Create:</strong> {$c}</div>
-              <div><strong>Submit:</strong> {$s}</div>
-              <div><strong>Payment:</strong> {$p}</div>
-            </div>";
+                  <div><strong>Create:</strong> {$c}</div>
+                  <div><strong>Submit:</strong> {$s}</div>
+                  <div><strong>Payment:</strong> {$p}</div>
+                </div>";
       })
       ->addColumn('action', function ($row) {
         $projectId = $row->project->id_project ?? null;
@@ -92,26 +94,26 @@ class InvoiceController extends Controller
         $deleteUrl = route('invoices.destroy', $invoiceId);
 
         return '
-        <div class="flex items-center space-x-3">
-          <a href="' . $showUrl . '" title="Lihat Detail" class="bg-blue-50 p-1 rounded">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path d="M9 12h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2h-6.586A2 2 0 008.586 4L6 6.586A2 2 0 004 8.586V17a2 2 0 002 2h8a2 2 0 002-2v-3" />
-            </svg>
-          </a>
-          <a href="' . $editUrl . '" title="Edit Invoice" class="bg-green-50 p-1 rounded">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path d="M15.232 5.232l3.536 3.536M9 11l6-6 3.536 3.536-6 6H9v-3.536z" />
-            </svg>
-          </a>
-          <form action="' . $deleteUrl . '" method="POST" onsubmit="return confirm(\'Hapus invoice ini?\')" class="bg-red-50 p-1 rounded inline">
-            ' . csrf_field() . method_field('DELETE') . '
-            <button type="submit" title="Hapus Invoice">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </form>
-        </div>';
+            <div class="flex items-center space-x-3">
+              <a href="' . $showUrl . '" title="Lihat Detail" class="bg-blue-50 p-1 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path d="M9 12h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2h-6.586A2 2 0 008.586 4L6 6.586A2 2 0 004 8.586V17a2 2 0 002 2h8a2 2 0 002-2v-3" />
+                </svg>
+              </a>
+              <a href="' . $editUrl . '" title="Edit Invoice" class="bg-green-50 p-1 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path d="M15.232 5.232l3.536 3.536M9 11l6-6 3.536 3.536-6 6H9v-3.536z" />
+                </svg>
+              </a>
+              <form action="' . $deleteUrl . '" method="POST" onsubmit="return confirm(\'Hapus invoice ini?\')" class="bg-red-50 p-1 rounded inline">
+                ' . csrf_field() . method_field('DELETE') . '
+                <button type="submit" title="Hapus Invoice">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </form>
+            </div>';
       })
       ->rawColumns([
         'remarks',
@@ -122,6 +124,7 @@ class InvoiceController extends Controller
       ])
       ->make(true);
   }
+
 
   /**
    * Display a listing of the resource.
@@ -252,7 +255,9 @@ class InvoiceController extends Controller
     // dd($paymentDate);
 
     // Generate badge HTML
-    $remark = strtoupper($invoice->remarks);
+    $remark = strtoupper($invoice->remarks ?? '');
+    $progress = isset($invoice->progress) ? intval($invoice->progress) : 0;
+
     $badgeClass = match (true) {
       $remark === 'DONE PAYMENT' => 'bg-green-100 text-green-800',
       str_starts_with($remark, 'PROCES PAYMENT') => 'bg-yellow-100 text-yellow-800',
@@ -260,7 +265,13 @@ class InvoiceController extends Controller
       default => 'bg-gray-100 text-gray-800',
     };
 
-    $invoice->remark_badge = "<span class='px-3 py-1 rounded-full text-sm font-medium {$badgeClass}'>{$invoice->remarks}</span>";
+    if (str_starts_with($remark, 'PROCES PAYMENT')) {
+      $displayText = ($invoice->remarks ?: 'PROCES PAYMENT') . " {$progress}%";
+    } else {
+      $displayText = $invoice->remarks ?: '-';
+    }
+
+    $invoice->remark_badge = "<span class='px-3 py-1 rounded-full text-sm font-medium {$badgeClass}'>" . e($displayText) . "</span>";
 
     return view('dashboard.invoices.show', compact('invoice', 'createDate', 'submitDate', 'paymentDate'));
   }

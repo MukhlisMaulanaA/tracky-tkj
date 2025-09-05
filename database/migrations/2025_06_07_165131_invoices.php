@@ -23,6 +23,7 @@ return new class extends Migration {
       $table->string('po_number')->nullable();
       $table->string('invoice_number')->nullable();
       $table->enum('remarks', ['DONE PAYMENT', 'WAITING PAYMENT', 'PROCES PAYMENT']);
+      $table->unsignedTinyInteger('progress')->nullable(); // 0–100
       $table->text('notes')->nullable();
       $table->decimal('amount', 15, 2);
       $table->decimal('vat', 15, 2)->nullable();

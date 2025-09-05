@@ -10,7 +10,7 @@
         <p class="text-sm text-gray-600">Perbarui data Invoice di bawah ini</p>
       </div>
 
-      <form method="POST" action="{{ route('invoices.update', $invoice->id) }}" class="space-y-8">
+      <form method="POST" action="{{ route('invoices.update', $invoice->id_invoice) }}" class="space-y-8">
         @csrf
         @method('PUT')
 
