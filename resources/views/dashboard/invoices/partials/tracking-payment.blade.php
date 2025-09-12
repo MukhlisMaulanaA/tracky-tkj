@@ -13,7 +13,7 @@
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
     <div class="bg-white border rounded-lg p-4 shadow-sm">
       <p class="text-gray-500 text-sm">Total Due</p>
-      <p class="text-lg font-semibold text-gray-800">Rp 54.880.000</p>
+      <p class="text-lg font-semibold text-gray-800">Rp @rupiah($invoice->payment_vat)</p>
     </div>
     <div class="bg-white border rounded-lg p-4 shadow-sm">
       <p class="text-gray-500 text-sm">Total Paid</p>
