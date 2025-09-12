@@ -18,6 +18,7 @@
         <p><strong>ID Invoice:</strong> <span id="detail-id"></span></p>
         <p><strong>Invoice Number:</strong> <span id="detail-number"></span></p>
         <p><strong>Customer:</strong> <span id="detail-customer"></span></p>
+        <p><strong>Tagihan:</strong> Rp. <span id="detail-tagihan"></span></p>
       </div>
 
       <!-- Form pembayaran -->
@@ -29,7 +30,7 @@
 
       <div>
         <label class="block text-sm font-medium text-gray-700">Tanggal Pembayaran</label>
-        <input type="date" name="payment_date" required
+        <input type="datetime-local" name="payment_date" step="1" required
           class="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
       </div>
 
@@ -88,6 +89,7 @@
             $('#detail-id').text(data.id_invoice);
             $('#detail-number').text(data.invoice_number);
             $('#detail-customer').text(data.customer_name);
+            $('#detail-tagihan').text(data.payment_vat); // ini decimal sudah rapih
             $('#invoice-details').removeClass('hidden');
           });
       });

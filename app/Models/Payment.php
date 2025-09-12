@@ -20,7 +20,7 @@ class Payment extends Model
     'payment_date',
     'pay_method',
     'reference',
-    'note'
+    'notes'
   ];
 
   protected static function boot()

@@ -40,11 +40,11 @@
               <th>No.</th>
               <th>ID Payment</th>
               <th>Invoice</th>
+              <th>Customer</th>
               <th>Amount</th>
               <th>Payment Date</th>
               <th>Payment Method</th>
               <th>Reference</th>
-              <th>Notes</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -76,6 +76,9 @@
               data: 'invoice_number',
             },
             {
+              data: 'customer_name',
+            },
+            {
               data: 'amount',
             },
             {
@@ -86,9 +89,6 @@
             },
             {
               data: 'reference',
-            },
-            {
-              data: 'notes',
             },
             {
               data: 'action',

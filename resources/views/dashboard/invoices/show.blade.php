@@ -131,7 +131,9 @@
             </div>
             <div class="border-t border-gray-300 pt-3">
               <div class="flex justify-between items-center"><span class="text-gray-700 font-medium">Payment with
-                  VAT</span><span class="text-xl font-bold text-blue-600">Rp{{ number_format($invoice->payment_vat, 0, ',', '.') }}</span></div>
+                  VAT</span><span
+                  class="text-xl font-bold text-blue-600">Rp{{ number_format($invoice->payment_vat, 0, ',', '.') }}</span>
+              </div>
             </div>
           </div>
           <div class="p-4 bg-white border rounded-md text-center">
@@ -142,6 +144,8 @@
           </div>
         </div>
       </div>
+
+      @include('dashboard.invoices.partials.tracking-payment')
 
       <!-- Summary Steps -->
       <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4 text-sm text-yellow-800 space-y-1">

@@ -37,11 +37,14 @@ class PaymentController extends Controller
   {
     $query = Payment::with('invoice.project');
 
-  // no status filter on payments; status lives on invoices only
+    // no status filter on payments; status lives on invoices only
 
     return DataTables::of($query)
       ->addColumn('invoice_number', function ($row) {
         return $row->invoice->invoice_number ?? '-';
+      })
+      ->addColumn('customer_name', function ($row) {
+        return $row->invoice->project->customer_name ?? '-';
       })
       ->editColumn('amount', function ($row) {
         return 'Rp' . number_format($row->amount, 0, ',', '.');
@@ -49,14 +52,15 @@ class PaymentController extends Controller
       ->editColumn('payment_date', function ($row) {
         try {
           // include hour:minute to show precise payment time
-          return Carbon::parse($row->payment_date)->translatedFormat('d F Y H:i');
+          return Carbon::parse($row->payment_date)->translatedFormat('d F Y H:i:s');
         } catch (\Exception $e) {
           return $row->payment_date;
         }
       })
       ->addColumn('action', function ($row) {
         $projectId = $row->invoice->project->id_project ?? null;
-        if (!$projectId) return '-';
+        if (!$projectId)
+          return '-';
 
         $showUrl = route('invoices.show.project', ['project' => $projectId]);
 
@@ -65,7 +69,7 @@ class PaymentController extends Controller
           . '<path d="M9 12h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2h-6.586A2 2 0 008.586 4L6 6.586A2 2 0 004 8.586V17a2 2 0 002 2h8a2 2 0 002-2v-3" />'
           . '</svg></a>';
       })
-  ->rawColumns(['action'])
+      ->rawColumns(['action'])
       ->make(true);
   }
 
@@ -98,7 +102,8 @@ class PaymentController extends Controller
       'results' => $invoices->map(function ($inv) {
         return [
           'id' => $inv->id_invoice,
-          'text' => "{$inv->id_invoice} - {$inv->invoice_number} ({$inv->project->customer_name})"
+          'text' => "{$inv->id_invoice} - {$inv->invoice_number} ({$inv->project->customer_name})",
+          'payment_vat' => number_format((float) $inv->payment_vat, 2, ',', '.'),
         ];
       })
     ]);
@@ -111,12 +116,14 @@ class PaymentController extends Controller
       'id_invoice' => $invoice->id_invoice,
       'invoice_number' => $invoice->invoice_number,
       'customer_name' => $invoice->project->customer_name ?? '-',
+      'payment_vat' => number_format((float) $invoice->payment_vat, 2, ',', '.'),
     ]);
   }
 
   /**
    * Store a newly created resource in storage.
    */
+
   public function store(Request $request)
   {
     $request->validate([
@@ -128,39 +135,46 @@ class PaymentController extends Controller
       'notes' => 'nullable|string',
     ]);
 
+    // Parse payment_date and ensure seconds are included
+    $parsedPaymentDate = Carbon::parse($request->payment_date)->format('Y-m-d H:i:s');
     // Simpan data payment (id_payment otomatis di-generate di model)
     $payment = Payment::create([
       'id_invoice' => $request->id_invoice,
       'amount' => $request->amount,
-      'payment_date' => $request->payment_date,
+      'payment_date' => $parsedPaymentDate,
       'pay_method' => $request->pay_method,
       'reference' => $request->reference,
       'notes' => $request->notes,
     ]);
+
+
 
     // Cari invoice terkait
     $invoice = Invoice::where('id_invoice', $request->id_invoice)->firstOrFail();
 
     // Hitung total pembayaran invoice
     $totalPaid = $invoice->payments()->sum('amount');
-
     if ($totalPaid == 0) {
       // Belum ada pembayaran
       $invoice->remarks = 'WAITING PAYMENT';
       $invoice->progress = 0;
 
-    } elseif ($totalPaid < $invoice->real_payment) {
+    } elseif ($totalPaid < $invoice->payment_vat) {
       // Pembayaran sebagian
-      $percentage = round(($totalPaid / $invoice->real_payment) * 100);
+      $percentage = round(($totalPaid / $invoice->payment_vat) * 100);
       $invoice->remarks = 'PROCES PAYMENT';
       $invoice->progress = $percentage;
+      // simpan date_payment dengan detik
+      $invoice->date_payment = $parsedPaymentDate;
 
     } else {
       // Sudah lunas
       $invoice->remarks = 'DONE PAYMENT';
       $invoice->progress = 100;
-      $invoice->date_payment = now(); // otomatis isi tanggal pembayaran selesai
+      // otomatis isi tanggal pembayaran selesai dengan detik
+      $invoice->date_payment = now()->format('Y-m-d H:i:s');
     }
+
 
     $invoice->save();
 
