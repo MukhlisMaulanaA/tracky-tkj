@@ -271,9 +271,13 @@ class InvoiceController extends Controller
       $displayText = $invoice->remarks ?: '-';
     }
 
+    $paid = $invoice->payment_vat * ($invoice->progress / 100);
+    $unpaid = $invoice->payment_vat - $paid;
+
+
     $invoice->remark_badge = "<span class='px-3 py-1 rounded-full text-sm font-medium {$badgeClass}'>" . e($displayText) . "</span>";
 
-    return view('dashboard.invoices.show', compact('invoice', 'createDate', 'submitDate', 'paymentDate'));
+    return view('dashboard.invoices.show', compact('invoice', 'createDate', 'submitDate', 'paymentDate', 'paid', 'unpaid'));
   }
 
 

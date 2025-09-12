@@ -17,11 +17,11 @@
     </div>
     <div class="bg-white border rounded-lg p-4 shadow-sm">
       <p class="text-gray-500 text-sm">Total Paid</p>
-      <p class="text-lg font-semibold text-green-600">Rp 54.880.000</p>
+      <p class="text-lg font-semibold text-green-600">Rp @rupiah($paid)</p>
     </div>
     <div class="bg-white border rounded-lg p-4 shadow-sm">
       <p class="text-gray-500 text-sm">Remaining</p>
-      <p class="text-lg font-semibold text-gray-800">Rp 0</p>
+      <p class="text-lg font-semibold text-gray-800">Rp @rupiah($unpaid)</p>
     </div>
     <div class="bg-white border rounded-lg p-4 shadow-sm">
       <p class="text-gray-500 text-sm">Progress</p>
