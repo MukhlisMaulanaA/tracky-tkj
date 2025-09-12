@@ -256,7 +256,10 @@ class InvoiceController extends Controller
 
     // Generate badge HTML
     $remark = strtoupper($invoice->remarks ?? '');
-    $progress = isset($invoice->progress) ? intval($invoice->progress) : 0;
+    $progress = $invoice->payment_vat > 0
+      ? round(($invoice->paid_amount / $invoice->payment_vat) * 100)
+      : 0;
+    $unpaid = $invoice->payment_vat - $invoice->paid_amount;
 
     $badgeClass = match (true) {
       $remark === 'DONE PAYMENT' => 'bg-green-100 text-green-800',
@@ -271,13 +274,11 @@ class InvoiceController extends Controller
       $displayText = $invoice->remarks ?: '-';
     }
 
-    $paid = $invoice->payment_vat * ($invoice->progress / 100);
-    $unpaid = $invoice->payment_vat - $paid;
 
 
     $invoice->remark_badge = "<span class='px-3 py-1 rounded-full text-sm font-medium {$badgeClass}'>" . e($displayText) . "</span>";
 
-    return view('dashboard.invoices.show', compact('invoice', 'createDate', 'submitDate', 'paymentDate', 'paid', 'unpaid'));
+    return view('dashboard.invoices.show', compact('invoice', 'createDate', 'submitDate', 'paymentDate', 'unpaid', 'progress'));
   }
 
 

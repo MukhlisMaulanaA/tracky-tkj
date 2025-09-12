@@ -32,6 +32,7 @@ class InvoiceSeeder extends Seeder
         'denda' => null,
         'payment_vat' => 62160000,
         'real_payment' => 54880000,
+        'paid_amount' => 62160000,
         'date_payment' => Carbon::parse('2025-01-17'),
       ],
       [
@@ -44,13 +45,14 @@ class InvoiceSeeder extends Seeder
         'po_number' => '135-XI-TKJ',
         'invoice_number' => '002/TKJ/I/2025',
         'remarks' => 'PROCES PAYMENT',
-        'notes' => 'Proces Payment 65%',
+        'notes' => 'Proces Payment 50%',
         'amount' => 26190000,
         'vat' => null,
         'pph' => null,
         'denda' => null,
         'payment_vat' => 26190000,
         'real_payment' => 26190000,
+        'paid_amount' => 10000000,
         'date_payment' => Carbon::parse('2025-05-02'),
       ],
       [
@@ -70,6 +72,7 @@ class InvoiceSeeder extends Seeder
         'denda' => null,
         'payment_vat' => 25613361,
         'real_payment' => 22613598,
+        'paid_amount' => 22613598,
         'date_payment' => null,
       ],
     ];

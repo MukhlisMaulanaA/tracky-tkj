@@ -31,6 +31,7 @@ return new class extends Migration {
       $table->decimal('denda', 15, 2)->nullable();
       $table->decimal('payment_vat', 15, 2)->nullable();
       $table->decimal('real_payment', 15, 2)->nullable();
+      $table->decimal('paid_amount', 15, 2)->nullable();
       $table->timestamps();
 
       $table->index('year');

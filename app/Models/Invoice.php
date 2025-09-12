@@ -26,11 +26,13 @@ class Invoice extends Model
     'status',
     'notes',
     'amount',
+    'progress',
     'vat',
     'pph',
     'denda',
     'payment_vat',
     'real_payment',
+    'paid_amount',
   ];
 
   public function getRouteKeyName()

@@ -147,34 +147,21 @@ class PaymentController extends Controller
       'notes' => $request->notes,
     ]);
 
-
-
     // Cari invoice terkait
     $invoice = Invoice::where('id_invoice', $request->id_invoice)->firstOrFail();
 
-    // Hitung total pembayaran invoice
     $totalPaid = $invoice->payments()->sum('amount');
+    $invoice->paid_amount = $totalPaid;
+
     if ($totalPaid == 0) {
-      // Belum ada pembayaran
       $invoice->remarks = 'WAITING PAYMENT';
-      $invoice->progress = 0;
-
     } elseif ($totalPaid < $invoice->payment_vat) {
-      // Pembayaran sebagian
-      $percentage = round(($totalPaid / $invoice->payment_vat) * 100);
       $invoice->remarks = 'PROCES PAYMENT';
-      $invoice->progress = $percentage;
-      // simpan date_payment dengan detik
-      $invoice->date_payment = $parsedPaymentDate;
-
+      $invoice->date_payment = $parsedPaymentDate; // simpan waktu pembayaran terakhir
     } else {
-      // Sudah lunas
       $invoice->remarks = 'DONE PAYMENT';
-      $invoice->progress = 100;
-      // otomatis isi tanggal pembayaran selesai dengan detik
-      $invoice->date_payment = now()->format('Y-m-d H:i:s');
+      $invoice->date_payment = now()->format('Y-m-d H:i:s'); // waktu lunas
     }
-
 
     $invoice->save();
 
