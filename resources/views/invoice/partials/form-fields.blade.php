@@ -61,16 +61,17 @@
       <label class="block text-sm font-medium text-gray-700 mb-2">VAT %</label>
       <select name="vat_percent"
         class="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-        <option value="11" {{ old('vat_percent', $invoice->vat_percent ?? 11) == 11 ? 'selected' : '' }}>11%</option>
-        <option value="12" {{ old('vat_percent', $invoice->vat_percent ?? 11) == 12 ? 'selected' : '' }}>12%</option>
+        <option value="11" {{ old('vat_percent', $invoice->vat_percent ?? 11) == 11 ? 'selected' : '' }}>11%
+        </option>
+        <option value="12" {{ old('vat_percent', $invoice->vat_percent ?? 11) == 12 ? 'selected' : '' }}>12%
+        </option>
       </select>
     </div>
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">PPH %</label>
       <input type="number" step="0.01" name="pph_percent"
         class="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-        min="0" max="100"
-        value="{{ old('pph_percent', $invoice->pph_percent ?? 2) }}">
+        min="0" max="100" value="{{ old('pph_percent', $invoice->pph_percent ?? 2) }}">
     </div>
   </div>
 </div>
@@ -87,8 +88,7 @@
         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
         <input type="text" name="amount" required
           class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          placeholder="0.00"
-          value="{{ old('amount', $invoice->amount ?? '') }}">
+          placeholder="0.00" value="{{ old('amount', $invoice->amount ?? '') }}">
       </div>
     </div>
     <div>
@@ -99,8 +99,7 @@
         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
         <input type="text" step="0.01" name="vat" required
           class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          placeholder="0.00" readonly
-          value="{{ old('vat', $invoice->vat ?? '') }}">
+          placeholder="0.00" readonly value="{{ old('vat', $invoice->vat ?? '') }}">
       </div>
     </div>
     <div>
@@ -111,8 +110,7 @@
         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
         <input type="text" step="0.01" name="pph" required
           class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          placeholder="0.00" readonly
-          value="{{ old('pph', $invoice->pph ?? '') }}">
+          placeholder="0.00" readonly value="{{ old('pph', $invoice->pph ?? '') }}">
       </div>
     </div>
     <div>
@@ -121,8 +119,7 @@
         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
         <input type="text" step="0.01" name="denda"
           class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          placeholder="0.00"
-          value="{{ old('denda', $invoice->denda ?? '') }}">
+          placeholder="0.00" value="{{ old('denda', $invoice->denda ?? '') }}">
       </div>
     </div>
     <div>
@@ -131,8 +128,7 @@
         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
         <input type="text" step="0.01" name="payment_vat"
           class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          placeholder="0.00"
-          value="{{ old('payment_vat', $invoice->payment_vat ?? '') }}">
+          placeholder="0.00" value="{{ old('payment_vat', $invoice->payment_vat ?? '') }}">
       </div>
     </div>
     <div>
@@ -141,8 +137,7 @@
         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
         <input type="text" step="0.01" name="real_payment"
           class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          placeholder="0.00"
-          value="{{ old('real_payment', $invoice->real_payment ?? '') }}">
+          placeholder="0.00" value="{{ old('real_payment', $invoice->real_payment ?? '') }}">
       </div>
     </div>
   </div>
@@ -164,21 +159,24 @@
         $remarkValue = old('remarks', $invoice->remarks ?? '');
       @endphp
       <label class="cursor-pointer">
-        <input type="radio" name="remarks" value="DONE PAYMENT" class="hidden" {{ $remarkValue == 'DONE PAYMENT' ? 'checked' : '' }}>
+        <input type="radio" name="remarks" value="DONE PAYMENT" class="hidden"
+          {{ $remarkValue == 'DONE PAYMENT' ? 'checked' : '' }}>
         <span data-value="DONE PAYMENT"
           class="remark-button inline-block px-4 py-2 rounded-full text-sm font-medium border bg-gray-100 text-gray-700 border-gray-300">
           DONE
         </span>
       </label>
       <label class="cursor-pointer">
-        <input type="radio" name="remarks" value="PROCES PAYMENT" class="hidden" {{ $remarkValue == 'PROCES PAYMENT' ? 'checked' : '' }}>
+        <input type="radio" name="remarks" value="PROCES PAYMENT" class="hidden"
+          {{ $remarkValue == 'PROCES PAYMENT' ? 'checked' : '' }}>
         <span data-value="PROCES PAYMENT"
           class="remark-button inline-block px-4 py-2 rounded-full text-sm font-medium border bg-gray-100 text-gray-700 border-gray-300">
           PROCES
         </span>
       </label>
       <label class="cursor-pointer">
-        <input type="radio" name="remarks" value="WAITING PAYMENT" class="hidden" {{ $remarkValue == 'WAITING PAYMENT' ? 'checked' : '' }}>
+        <input type="radio" name="remarks" value="WAITING PAYMENT" class="hidden"
+          {{ $remarkValue == 'WAITING PAYMENT' ? 'checked' : '' }}>
         <span data-value="WAITING PAYMENT"
           class="remark-button inline-block px-4 py-2 rounded-full text-sm font-medium border bg-gray-100 text-gray-700 border-gray-300">
           WAITING

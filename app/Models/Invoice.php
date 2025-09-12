@@ -14,6 +14,7 @@ class Invoice extends Model
   protected $keyType = 'string';
 
   protected $fillable = [
+    'id_invoice',
     'id_project',
     'year',
     'create_date',

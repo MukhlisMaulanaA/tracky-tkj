@@ -18,7 +18,11 @@
 
           <!-- Project Selection -->
           <div class="p-6 border-b border-gray-100">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Pilih Project</h3>
+            <div class="flex flex-row justify-between">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4 w-3/5">Pilih Project</h3>
+              <input type="text" name="id_invoice" value="{{ old('id_invoice', $invoice->id_invoice ?? '') }}"
+              class="form-input border-none rounded-md" required readonly>
+            </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">ID Project</label>
               <select id="id_project" name="id_project"

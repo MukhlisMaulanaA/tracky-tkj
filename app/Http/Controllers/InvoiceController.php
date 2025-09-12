@@ -165,6 +165,26 @@ class InvoiceController extends Controller
       ->mapWithKeys(fn($year) => [$year => $year])
       ->toArray();
 
+    // Generate id_invoice in format: INVYYLNNN (I + year short + month letter + 3-digit seq)
+    $yearShort = date('y');
+    $monthIndex = (int) date('n');
+    $monthLetter = chr(ord('A') + ($monthIndex - 1));
+
+    $prefix = sprintf('INV%s%s', $yearShort, $monthLetter);
+    $last = Invoice::where('id_invoice', 'like', $prefix . '%')
+      ->orderBy('id_invoice', 'desc')
+      ->first();
+
+    if ($last) {
+      $lastSeq = (int) substr($last->id_invoice, -3);
+      $seq = $lastSeq + 1;
+    } else {
+      $seq = 1;
+    }
+
+    $suggestedId = sprintf('%s%03d', $prefix, $seq);
+    $invoice->id_invoice = $suggestedId;
+
     $projectSuggestions = [
       'Digital Transformation Project',
       'Website Development',
@@ -206,9 +226,27 @@ class InvoiceController extends Controller
     // pass submit_date and datePayment to helper so calculation is based on payment date when available
     $duration = $this->calculateDuration($request->submit_date, $datePayment);
 
-    // dd($request->id_project);
+    // Generate id_invoice in format: INVYYLNNN (I + year short + month letter + 3-digit seq)
+    $yearShort = date('y');
+    $monthIndex = (int) date('n');
+    $monthLetter = chr(ord('A') + ($monthIndex - 1));
+
+    $prefix = sprintf('INV%s%s', $yearShort, $monthLetter);
+    $last = Invoice::where('id_invoice', 'like', $prefix . '%')
+      ->orderBy('id_invoice', 'desc')
+      ->first();
+
+    if ($last) {
+      $lastSeq = (int) substr($last->id_invoice, -3);
+      $seq = $lastSeq + 1;
+    } else {
+      $seq = 1;
+    }
+
+    $suggestedId = sprintf('%s%03d', $prefix, $seq);
 
     Invoice::create([
+      'id_invoice' => $suggestedId,
       'id_project' => $request->id_project,
       'year' => $request->year,
       'create_date' => $request->create_date,
