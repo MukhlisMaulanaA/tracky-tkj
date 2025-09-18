@@ -74,7 +74,7 @@
             <th class="px-4 py-2">DATE</th>
             <th class="px-4 py-2">AMOUNT</th>
             <th class="px-4 py-2">METHOD</th>
-            <th class="px-4 py-2"></th>
+            <th class="px-4 py-2">REFERENCE</th>
             <th class="px-4 py-2">DESCRIPTION</th>
           </tr>
         </thead>
