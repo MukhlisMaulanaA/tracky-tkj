@@ -4,7 +4,7 @@
   <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow">
     <h2 class="text-2xl font-bold mb-4">Tambah Payment</h2>
 
-    <form action="{{ route('payments.store') }}" method="POST" class="space-y-6">
+    <form action="{{ route('payments.store') }}" method="POST" class="space-y-6" enctype="multipart/form-data">
       @csrf
 
       <!-- Select2 Invoice -->
@@ -52,9 +52,31 @@
           class="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
       </div>
 
+      <!-- Proof image upload -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Bukti Pembayaran (opsional)</label>
+        <input type="file" name="proof_image" accept="image/*"
+          class="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        @error('proof_image')
+          <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+        @enderror
+      </div>
+
+      <div class="mt-4 w-full">
+        <div class="flex justify-center">
+          <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+        </div>
+
+        @error('g-recaptcha-response')
+          <div class="mt-2 text-sm text-red-600 dark:text-red-400 text-center">
+            {{ $message }}
+          </div>
+        @enderror
+      </div>
+
       <div class="flex justify-end">
         <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          Simpan Payment
+          Submit Payment
         </button>
       </div>
     </form>

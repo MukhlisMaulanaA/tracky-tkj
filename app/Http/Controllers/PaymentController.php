@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Http;
+use Yajra\DataTables\Facades\DataTables;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Carbon;
 
 class PaymentController extends Controller
 {
@@ -133,19 +134,30 @@ class PaymentController extends Controller
       'pay_method' => 'nullable|string|max:50',
       'reference' => 'nullable|string|max:100',
       'notes' => 'nullable|string',
+      'proof_image' => 'nullable|image|mimes:jpeg,jpg,png|max:2048', // max 2MB
     ]);
 
     // Parse payment_date and ensure seconds are included
     $parsedPaymentDate = Carbon::parse($request->payment_date)->format('Y-m-d H:i:s');
     // Simpan data payment (id_payment otomatis di-generate di model)
-    $payment = Payment::create([
+    $paymentData = [
       'id_invoice' => $request->id_invoice,
       'amount' => $request->amount,
       'payment_date' => $parsedPaymentDate,
       'pay_method' => $request->pay_method,
       'reference' => $request->reference,
       'notes' => $request->notes,
-    ]);
+    ];
+
+    // handle proof image upload
+    if ($request->hasFile('proof_image') && $request->file('proof_image')->isValid()) {
+      // store in storage/app/public/images
+      $path = $request->file('proof_image')->store('images', 'public');
+      // save stored path (relative to storage/app/public)
+      $paymentData['proof_image'] = $path;
+    }
+
+    $payment = Payment::create($paymentData);
 
     // Cari invoice terkait
     $invoice = Invoice::where('id_invoice', $request->id_invoice)->firstOrFail();
@@ -164,6 +176,18 @@ class PaymentController extends Controller
     }
 
     $invoice->save();
+
+    $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+      'secret' => env('RECAPTCHA_SECRET_KEY'),
+      'response' => $request->input('g-recaptcha-response'),
+      'remoteip' => $request->ip(),
+    ]);
+
+    if (!($response->json()['success'] ?? false)) {
+      return back()->withErrors([
+        'g-recaptcha-response' => 'Verifikasi reCAPTCHA gagal. Coba lagi.'
+      ])->withInput();
+    }
 
     return redirect()
       ->route('payments.index')
