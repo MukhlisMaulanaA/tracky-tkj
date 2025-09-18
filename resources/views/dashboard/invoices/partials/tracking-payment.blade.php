@@ -74,7 +74,7 @@
             <th class="px-4 py-2">DATE</th>
             <th class="px-4 py-2">AMOUNT</th>
             <th class="px-4 py-2">METHOD</th>
-            <th class="px-4 py-2">REFERENCE</th>
+            <th class="px-4 py-2"></th>
             <th class="px-4 py-2">DESCRIPTION</th>
           </tr>
         </thead>
@@ -88,9 +88,16 @@
                 Rp @rupiah($payment->amount ?? ($payment->paid_amount ?? 0))
               </td>
               <td class="px-4 py-2">{{ $payment->method ?? ($payment->pay_method ?? '-') }}</td>
-              <td class="px-4 py-2">{{ $payment->reference ?? ($payment->transaction_id ?? '-') }}</td>
+              <td class="px-4 py-2">
+                @if(!empty($payment->proof_image))
+                  <button type="button" class="view-proof-btn text-blue-600 hover:underline" data-proof="{{ asset('storage/' . $payment->proof_image) }}" aria-label="View proof for {{ $payment->id_payment ?? 'payment' }}">View Proof</button>
+                @elseif(!empty($payment->reference) || !empty($payment->transaction_id))
+                  {{ $payment->reference ?? $payment->transaction_id }}
+                @else
+                  <span class="text-gray-500">-</span>
+                @endif
               </td>
-              <td class="px-4 py-2">{{ $payment->description ?? ($payment->note ?? '-') }}</td>
+              <td class="px-4 py-2">{{ $payment->description ?? ($payment->notes ?? '-') }}</td>
             </tr>
           @empty
             <tr class="bg-white border-t">
@@ -102,5 +109,67 @@
       </table>
     </div>
   </div>
+
+    <!-- Proof modal -->
+    <div id="proof-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-60">
+      <div class="relative max-w-3xl w-full mx-4">
+        <button id="proof-modal-close" class="absolute right-0 top-0 mt-2 mr-2 text-white bg-gray-800 bg-opacity-60 hover:bg-opacity-80 rounded-full w-8 h-8 flex items-center justify-center" aria-label="Close image modal">×</button>
+        <div class="bg-white rounded shadow-lg overflow-hidden">
+          <img id="proof-modal-img" src="" alt="Proof image" class="w-full h-auto object-contain max-h-[80vh] bg-black">
+        </div>
+      </div>
+    </div>
+
+    @push('scripts')
+      <script>
+        (function() {
+          function initProofModal() {
+            const modal = document.getElementById('proof-modal');
+            const modalImg = document.getElementById('proof-modal-img');
+            const closeBtn = document.getElementById('proof-modal-close');
+            if (!modal || !modalImg || !closeBtn) return;
+
+            // open handlers
+            document.querySelectorAll('.view-proof-btn').forEach(function(btn) {
+              btn.addEventListener('click', function(e) {
+                const url = btn.getAttribute('data-proof');
+                if (!url) return;
+                modalImg.src = url;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                // focus close for accessibility
+                closeBtn.focus();
+              });
+            });
+
+            function closeModal() {
+              modal.classList.add('hidden');
+              modal.classList.remove('flex');
+              modalImg.src = '';
+            }
+
+            closeBtn.addEventListener('click', closeModal);
+
+            // click outside to close
+            modal.addEventListener('click', function(e) {
+              if (e.target === modal) closeModal();
+            });
+
+            // close on Escape
+            document.addEventListener('keydown', function(e) {
+              if (e.key === 'Escape' || e.key === 'Esc') {
+                if (!modal.classList.contains('hidden')) closeModal();
+              }
+            });
+          }
+
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initProofModal);
+          } else {
+            initProofModal();
+          }
+        })();
+      </script>
+    @endpush
 </div>
 </div>
