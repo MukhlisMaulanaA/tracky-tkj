@@ -59,16 +59,37 @@ class PaymentController extends Controller
         }
       })
       ->addColumn('action', function ($row) {
-        $projectId = $row->invoice->project->id_project ?? null;
-        if (!$projectId)
-          return '-';
+        $buttons = '';
 
-        $showUrl = route('invoices.show.project', ['project' => $projectId]);
+        // 🔹 Jika ada bukti pembayaran
+        if (!empty($row->proof_image)) {
+          $proofUrl = asset('storage/' . ltrim($row->proof_image, '/'));
+          $buttons .= '<button type="button" 
+                        class="view-proof-btn inline-flex items-center p-1 text-xs text-white bg-blue-600 rounded" 
+                        title="Lihat Bukti" 
+                        data-proof="' . $proofUrl . '">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                    </button>';
+        }
 
-        return '<a href="' . $showUrl . '" title="Lihat Invoice" class="bg-blue-50 p-1 rounded inline-flex items-center">'
-          . '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">'
-          . '<path d="M9 12h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2h-6.586A2 2 0 008.586 4L6 6.586A2 2 0 004 8.586V17a2 2 0 002 2h8a2 2 0 002-2v-3" />'
-          . '</svg></a>';
+        // 🔹 Tombol Hapus Payment
+        $deleteUrl = route('payments.destroy', $row->id_payment);
+        $buttons .= '
+        <form action="' . $deleteUrl . '" method="POST" class="inline ml-1" onsubmit="return confirm(\'Hapus payment ini?\')">
+            ' . csrf_field() . method_field('DELETE') . '
+            <button type="submit" 
+                    class="inline-flex items-center p-1 text-xs text-white bg-red-600 rounded" 
+                    title="Hapus Payment">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </form>';
+
+        return $buttons ?: '-';
       })
       ->rawColumns(['action'])
       ->make(true);
@@ -224,6 +245,31 @@ class PaymentController extends Controller
    */
   public function destroy(Payment $payment)
   {
-    //
+    $invoice = $payment->invoice; // relasi ke invoice
+
+    // hapus payment
+    $payment->delete();
+
+    // hitung ulang total pembayaran
+    $totalPaid = $invoice->payments()->sum('amount');
+    $invoice->paid_amount = $totalPaid;
+
+    if ($totalPaid == 0) {
+      $invoice->remarks = 'WAITING PAYMENT';
+    } elseif ($totalPaid < $invoice->payment_vat) {
+      $invoice->remarks = 'PROCES PAYMENT';
+    } else {
+      $invoice->remarks = 'DONE PAYMENT';
+    }
+
+    // reset date_payment kalau belum lunas
+    $invoice->date_payment = ($totalPaid >= $invoice->payment_vat)
+      ? now()
+      : null;
+
+    $invoice->save();
+
+    return redirect()->route('payments.index')
+      ->with('success', "Payment berhasil dihapus dan invoice {$invoice->id_invoice} diperbarui.");
   }
 }

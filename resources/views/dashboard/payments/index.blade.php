@@ -112,6 +112,68 @@
         });
       });
     </script>
+    <script>
+      (function() {
+        function initProofModal() {
+          // create modal markup and append once
+          let modal = document.getElementById('payment-proof-modal');
+          if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'payment-proof-modal';
+            modal.className = 'fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-60';
+            modal.innerHTML = `
+              <div class="relative max-w-4xl w-full mx-4">
+                <button id="payment-proof-modal-close" class="absolute right-0 top-0 mt-2 mr-2 text-white bg-gray-800 bg-opacity-60 hover:bg-opacity-80 rounded-full w-8 h-8 flex items-center justify-center" aria-label="Close image modal">×</button>
+                <div class="bg-white rounded shadow-lg overflow-hidden">
+                  <img id="payment-proof-modal-img" src="" alt="Proof image" class="w-full h-auto object-contain max-h-[80vh] bg-black">
+                </div>
+              </div>`;
+            document.body.appendChild(modal);
+          }
+
+          const modalImg = document.getElementById('payment-proof-modal-img');
+          const closeBtn = document.getElementById('payment-proof-modal-close');
+          if (!modalImg || !closeBtn) return;
+
+          function openModal(url) {
+            modalImg.src = url;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            closeBtn.focus();
+          }
+
+          function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            modalImg.src = '';
+          }
+
+          // delegated click for buttons produced by DataTables
+          document.addEventListener('click', function(e) {
+            const btn = e.target.closest && e.target.closest('.view-proof-btn');
+            if (!btn) return;
+            const url = btn.getAttribute('data-proof');
+            if (!url) return;
+            openModal(url);
+          });
+
+          closeBtn.addEventListener('click', closeModal);
+
+          modal.addEventListener('click', function(e) {
+            if (e.target === modal) closeModal();
+          });
+
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' || e.key === 'Esc') {
+              if (!modal.classList.contains('hidden')) closeModal();
+            }
+          });
+        }
+
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initProofModal);
+        else initProofModal();
+      })();
+    </script>
   @endpush
 
   @push('styles')
