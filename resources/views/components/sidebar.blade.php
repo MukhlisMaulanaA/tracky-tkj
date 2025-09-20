@@ -136,7 +136,8 @@
   <div class="border-t border-gray-200 p-4">
     <div
       class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-200"
-      x-tooltip="collapsed ? 'John Doe - Administrator' : ''">
+      x-tooltip="collapsed ? '{{ Auth::user()->name }} - Administrator' : ''">
+
       <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
         <x-icon name="user" class="h-4 w-4 text-white" />
       </div>
@@ -145,16 +146,21 @@
         x-transition:enter-start="opacity-0 translate-x-4" x-transition:enter-end="opacity-100 translate-x-0"
         x-transition:leave="transition ease-in-out duration-200" x-transition:leave-start="opacity-100 translate-x-0"
         x-transition:leave-end="opacity-0 translate-x-4">
-        <p class="text-sm font-medium text-gray-900 truncate">John Doe</p>
+        <p class="text-sm font-medium text-gray-900 truncate">{{ Auth::user()->name }}</p>
         <p class="text-xs text-gray-500 truncate">Administrator</p>
       </div>
 
-      <x-icon name="settings" class="h-4 w-4 text-gray-400 flex-shrink-0" x-show="!collapsed"
-        x-transition:enter="transition ease-in-out duration-300 delay-150" x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in-out duration-200"
-        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" />
+      <!-- 🔹 Icon Settings dijadikan link -->
+      <a href="{{ route('profile.edit') }}" class="flex items-center justify-center" title="Edit Profile">
+        <x-icon name="settings" class="h-4 w-4 text-gray-400 flex-shrink-0" x-show="!collapsed"
+          x-transition:enter="transition ease-in-out duration-300 delay-150"
+          x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+          x-transition:leave="transition ease-in-out duration-200" x-transition:leave-start="opacity-100 scale-100"
+          x-transition:leave-end="opacity-0 scale-95" />
+      </a>
     </div>
   </div>
+
 </div>
 
 <!-- Mobile Sidebar -->
@@ -165,7 +171,8 @@
   <!-- Mobile Logo Section -->
   <div class="flex items-center justify-between h-16 px-4 border-b border-gray-200">
     <h1 class="text-xl font-bold text-gray-900">Tracky TKJ</h1>
-    <button @click="mobileMenuOpen = false" class="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+    <button @click="mobileMenuOpen = false"
+      class="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100">
       <x-icon name="x" class="h-5 w-5" />
     </button>
   </div>
@@ -185,7 +192,8 @@
               <x-icon :name="$route['icon']" class="h-5 w-5 flex-shrink-0" />
               <span class="ml-3 flex-1 text-left">{{ $route['name'] }}</span>
               <x-icon name="chevron-down"
-                class="h-4 w-4 text-gray-400 transition-transform duration-200 flex-shrink-0" class="mobileOpenSubmenu === {{ $index }} ? 'rotate-180' : ''" />
+                class="h-4 w-4 text-gray-400 transition-transform duration-200 flex-shrink-0"
+                class="mobileOpenSubmenu === {{ $index }} ? 'rotate-180' : ''" />
             </button>
 
             <!-- Mobile Submenu -->
@@ -227,7 +235,7 @@
         <x-icon name="user" class="h-4 w-4 text-white" />
       </div>
       <div class="flex-1">
-        <p class="text-sm font-medium text-gray-900">John Doe</p>
+        <p class="text-sm font-medium text-gray-900">{{ Auth::user()->name }}</p>
         <p class="text-xs text-gray-500">Administrator</p>
       </div>
       <x-icon name="settings" class="h-4 w-4 text-gray-400" />
