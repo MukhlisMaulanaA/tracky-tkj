@@ -1,13 +1,13 @@
 on:
   push:
     branches:
-      - master (sesuaikan dengan branch yang digunakan)
+      - main (sesuaikan dengan branch yang digunakan)
 
 jobs:
   build-js-production:
     name: Build JavaScript/CSS for Production Server
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v1
       - name: NPM Build
@@ -24,7 +24,7 @@ jobs:
     name: Deploy Project to Production Server
     runs-on: ubuntu-latest
     needs: [ build-js-production ]
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v1
       - name: Fetch built assets from Artifacts
@@ -47,4 +47,4 @@ jobs:
       - name: Deploy to Development
         env:
           DOT_ENV: ${{ secrets.DOT_ENV_PRODUCTION }}
-        run: php vendor/bin/dep deploy ServerProduction branch=master (sesuaikan dengan branch yang digunakan)
+        run: php vendor/bin/dep deploy ServerProduction branch=main (sesuaikan dengan branch yang digunakan)
