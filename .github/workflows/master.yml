@@ -37,6 +37,8 @@ jobs:
         with:
           php-version: '8.0'
           extension-csv: mbstring, bcmath
+      - name: Composer Update
+        run: composer update
       - name: Composer install
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Setup Deployer
