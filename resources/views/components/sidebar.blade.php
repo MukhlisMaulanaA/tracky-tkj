@@ -22,12 +22,12 @@
           ],
       ],
       [
-          'name' => 'Payment Tracker',
+          'name' => 'Payment Maker',
           'href' => route('payments.index'),
           'icon' => 'banknote',
           'hasSubmenu' => true,
           'submenu' => [
-              ['name' => 'Tambah Payment', 'href' => route('payments.create'), 'icon' => 'plus'],
+              ['name' => 'Buat Payment', 'href' => route('payments.create'), 'icon' => 'plus'],
               ['name' => 'Daftar Payment', 'href' => route('payments.index'), 'icon' => 'list'],
           ],
       ],
