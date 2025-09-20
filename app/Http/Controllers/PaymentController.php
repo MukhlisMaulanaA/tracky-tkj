@@ -78,7 +78,7 @@ class PaymentController extends Controller
         // 🔹 Tombol Hapus Payment
         $deleteUrl = route('payments.destroy', $row->id_payment);
         $buttons .= '
-        <form action="' . $deleteUrl . '" method="POST" class="inline ml-1" onsubmit="return confirm(\'Hapus payment ini?\')">
+        <form action="' . $deleteUrl . '" method="POST" onsubmit="return confirm(\'Hapus payment ini?\')">
             ' . csrf_field() . method_field('DELETE') . '
             <button type="submit" 
                     class="inline-flex items-center p-1 text-xs text-white bg-red-600 rounded" 
@@ -89,8 +89,10 @@ class PaymentController extends Controller
             </button>
         </form>';
 
-        return $buttons ?: '-';
+        // 🔹 Bungkus semua tombol dengan flex container
+        return '<div class="flex items-center space-x-2">' . $buttons . '</div>';
       })
+
       ->rawColumns(['action'])
       ->make(true);
   }
