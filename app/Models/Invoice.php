@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Invoice extends Model
 {
@@ -53,24 +54,36 @@ class Invoice extends Model
 
   public function recalcPaymentStatus()
   {
+    // Hitung ulang total pembayaran
     $this->paid_amount = $this->payments()->sum('amount');
 
+    // Hitung progress %
     $this->progress = $this->payment_vat > 0
       ? min(round(($this->paid_amount / $this->payment_vat) * 100), 100)
       : 0;
 
+    // Tentukan remarks & tanggal pembayaran
     if ($this->paid_amount == 0) {
       $this->remarks = 'WAITING PAYMENT';
       $this->date_payment = null;
     } elseif ($this->paid_amount < $this->payment_vat) {
       $this->remarks = 'PROCES PAYMENT';
-      $this->date_payment = now(); // atau last payment date
+      $this->date_payment = now(); // atau pakai last payment_date
     } else {
       $this->remarks = 'DONE PAYMENT';
-      $this->date_payment = now();
+      $this->date_payment = now(); // invoice lunas
+    }
+
+    // 🔹 Hitung durasi dari submit_date ke date_payment
+    if ($this->submit_date && $this->date_payment) {
+      $this->duration = Carbon::parse($this->submit_date)
+        ->diffInDays(Carbon::parse($this->date_payment));
+    } else {
+      $this->duration = null; // belum bisa dihitung
     }
 
     $this->save();
   }
+
 
 }
