@@ -128,6 +128,9 @@ class PaymentController extends Controller
           'id' => $inv->id_invoice,
           'text' => "{$inv->id_invoice} - {$inv->invoice_number} ({$inv->project->customer_name})",
           'payment_vat' => number_format((float) $inv->payment_vat, 2, ',', '.'),
+          // hitung unpaid: payment_vat - paid_amount (jika paid_amount null, anggap 0)
+          'unpaid' => (float) $inv->payment_vat - (float) ($inv->paid_amount ?? 0),
+          'unpaid_note' => 'Sisa belum dibayar: Rp ' . number_format(((float) $inv->payment_vat - (float) ($inv->paid_amount ?? 0)), 0, ',', '.')
         ];
       })
     ]);
@@ -141,6 +144,9 @@ class PaymentController extends Controller
       'invoice_number' => $invoice->invoice_number,
       'customer_name' => $invoice->project->customer_name ?? '-',
       'payment_vat' => number_format((float) $invoice->payment_vat, 2, ',', '.'),
+      // hitung unpaid: payment_vat - paid_amount (jika paid_amount null, anggap 0)
+      'unpaid' => (float) $invoice->payment_vat - (float) ($invoice->paid_amount ?? 0),
+      'note' => 'Sisa belum dibayar: Rp ' . number_format(((float) $invoice->payment_vat - (float) ($invoice->paid_amount ?? 0)), 0, ',', '.'),
     ]);
   }
 
@@ -160,9 +166,10 @@ class PaymentController extends Controller
       'proof_image' => 'nullable|image|mimes:jpeg,jpg,png|max:2048', // max 2MB
     ]);
 
-    // Parse payment_date and ensure seconds are included
+    // Parse payment_date dengan detik
     $parsedPaymentDate = Carbon::parse($request->payment_date)->format('Y-m-d H:i:s');
-    // Simpan data payment (id_payment otomatis di-generate di model)
+
+    // Data payment
     $paymentData = [
       'id_invoice' => $request->id_invoice,
       'amount' => $request->amount,
@@ -172,34 +179,19 @@ class PaymentController extends Controller
       'notes' => $request->notes,
     ];
 
-    // handle proof image upload
+    // Upload proof image jika ada
     if ($request->hasFile('proof_image') && $request->file('proof_image')->isValid()) {
-      // store in storage/app/public/images
       $path = $request->file('proof_image')->store('images', 'public');
-      // save stored path (relative to storage/app/public)
       $paymentData['proof_image'] = $path;
     }
 
     $payment = Payment::create($paymentData);
 
-    // Cari invoice terkait
-    $invoice = Invoice::where('id_invoice', $request->id_invoice)->firstOrFail();
+    // 🔹 Update invoice status secara eksplisit
+    $invoice = Invoice::findOrFail($request->id_invoice);
+    $invoice->recalcPaymentStatus();
 
-    $totalPaid = $invoice->payments()->sum('amount');
-    $invoice->paid_amount = $totalPaid;
-
-    if ($totalPaid == 0) {
-      $invoice->remarks = 'WAITING PAYMENT';
-    } elseif ($totalPaid < $invoice->payment_vat) {
-      $invoice->remarks = 'PROCES PAYMENT';
-      $invoice->date_payment = $parsedPaymentDate; // simpan waktu pembayaran terakhir
-    } else {
-      $invoice->remarks = 'DONE PAYMENT';
-      $invoice->date_payment = now()->format('Y-m-d H:i:s'); // waktu lunas
-    }
-
-    $invoice->save();
-
+    // 🔹 Validasi reCAPTCHA
     $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
       'secret' => env('RECAPTCHA_SECRET_KEY'),
       'response' => $request->input('g-recaptcha-response'),
@@ -216,6 +208,7 @@ class PaymentController extends Controller
       ->route('payments.index')
       ->with('success', "Payment {$payment->id_payment} berhasil ditambahkan untuk Invoice {$invoice->id_invoice}");
   }
+
 
 
   /**
@@ -247,31 +240,15 @@ class PaymentController extends Controller
    */
   public function destroy(Payment $payment)
   {
-    $invoice = $payment->invoice; // relasi ke invoice
+    $invoice = $payment->invoice;
 
-    // hapus payment
     $payment->delete();
 
-    // hitung ulang total pembayaran
-    $totalPaid = $invoice->payments()->sum('amount');
-    $invoice->paid_amount = $totalPaid;
+    // 🔹 Update invoice status
+    $invoice->recalcPaymentStatus();
 
-    if ($totalPaid == 0) {
-      $invoice->remarks = 'WAITING PAYMENT';
-    } elseif ($totalPaid < $invoice->payment_vat) {
-      $invoice->remarks = 'PROCES PAYMENT';
-    } else {
-      $invoice->remarks = 'DONE PAYMENT';
-    }
-
-    // reset date_payment kalau belum lunas
-    $invoice->date_payment = ($totalPaid >= $invoice->payment_vat)
-      ? now()
-      : null;
-
-    $invoice->save();
-
-    return redirect()->route('payments.index')
-      ->with('success', "Payment berhasil dihapus dan invoice {$invoice->id_invoice} diperbarui.");
+    return redirect()
+      ->route('payments.index')
+      ->with('success', "Payment berhasil dihapus dan invoice {$invoice->id_invoice} diperbarui");
   }
 }

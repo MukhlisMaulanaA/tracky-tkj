@@ -51,4 +51,26 @@ class Invoice extends Model
     return $this->hasMany(Payment::class, 'id_invoice', 'id_invoice');
   }
 
+  public function recalcPaymentStatus()
+  {
+    $this->paid_amount = $this->payments()->sum('amount');
+
+    $this->progress = $this->payment_vat > 0
+      ? min(round(($this->paid_amount / $this->payment_vat) * 100), 100)
+      : 0;
+
+    if ($this->paid_amount == 0) {
+      $this->remarks = 'WAITING PAYMENT';
+      $this->date_payment = null;
+    } elseif ($this->paid_amount < $this->payment_vat) {
+      $this->remarks = 'PROCES PAYMENT';
+      $this->date_payment = now(); // atau last payment date
+    } else {
+      $this->remarks = 'DONE PAYMENT';
+      $this->date_payment = now();
+    }
+
+    $this->save();
+  }
+
 }

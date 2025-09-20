@@ -18,10 +18,33 @@
 
           <!-- Detail singkat invoice -->
           <div id="invoice-details" class="hidden p-4 bg-gray-50 rounded border border-gray-200">
-            <p><strong>ID Invoice:</strong> <span id="detail-id"></span></p>
-            <p><strong>Invoice Number:</strong> <span id="detail-number"></span></p>
-            <p><strong>Customer:</strong> <span id="detail-customer"></span></p>
-            <p><strong>Tagihan:</strong> Rp. <span id="detail-tagihan"></span></p>
+            <div class="grid grid-cols-1 gap-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-600">ID Invoice</span>
+                <span id="detail-id" class="font-medium text-gray-800"></span>
+              </div>
+
+              <div class="flex justify-between">
+                <span class="text-gray-600">Invoice Number</span>
+                <span id="detail-number" class="font-medium text-gray-800"></span>
+              </div>
+
+              <div class="flex justify-between">
+                <span class="text-gray-600">Customer</span>
+                <span id="detail-customer" class="font-medium text-gray-800"></span>
+              </div>
+
+              <div class="flex justify-between">
+                <span class="text-gray-600">Tagihan</span>
+                <span id="detail-tagihan" class="font-medium text-gray-800"></span>
+              </div>
+
+              <!-- Unpaid row (added) -->
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Sisa belum dibayar</span>
+                <span id="detail-unpaid" class="font-semibold text-red-600">-</span>
+              </div>
+            </div>
           </div>
 
           <div>
@@ -145,10 +168,41 @@
         fetch(`/payments/invoices/${id_invoice}/detail`)
           .then(res => res.json())
           .then(data => {
+            // helper: ensure we have a formatted rupiah string
+            function formatRupiah(number, withDecimals = false) {
+              if (number === null || number === undefined) return '-';
+              const n = withDecimals ? Number(number).toFixed(2) : Math.round(Number(number));
+              return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            }
+
             $('#detail-id').text(data.id_invoice);
             $('#detail-number').text(data.invoice_number);
             $('#detail-customer').text(data.customer_name);
-            $('#detail-tagihan').text(data.payment_vat); // ini decimal sudah rapih
+            // data.payment_vat is already formatted on server with 2 decimals; keep displayed value but strip decimals for consistency
+            $('#detail-tagihan').text(data.payment_vat);
+
+            // prefer explicit unpaid numeric if provided, otherwise try to parse from note
+            let unpaidValue = null;
+            if (data.unpaid !== undefined) {
+              unpaidValue = Number(data.unpaid);
+            } else if (data.note) {
+              // try to extract digits from note like 'Sisa belum dibayar: Rp 1.234.567'
+              const digits = (data.note.match(/Rp\s*([\d\.]+)/) || [null, null])[1];
+              if (digits) unpaidValue = Number(digits.replace(/\./g, ''));
+            }
+
+            if (unpaidValue === null || isNaN(unpaidValue)) {
+              $('#detail-unpaid').text('-').removeClass('text-green-600').addClass('text-red-600');
+            } else {
+              const formatted = 'Rp ' + formatRupiah(unpaidValue, false);
+              $('#detail-unpaid').text(formatted);
+              if (unpaidValue <= 0) {
+                $('#detail-unpaid').removeClass('text-red-600').addClass('text-green-600');
+              } else {
+                $('#detail-unpaid').removeClass('text-green-600').addClass('text-red-600');
+              }
+            }
+
             $('#invoice-details').removeClass('hidden');
           });
       });
