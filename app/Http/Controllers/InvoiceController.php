@@ -131,15 +131,18 @@ class InvoiceController extends Controller
    */
   public function index(Request $request): View
   {
-    // Hitung Paid Amount (Done Payment)
-    $paidAmount = Invoice::where('remarks', 'DONE PAYMENT')
-      ->sum('real_payment');
+    // Compute paid amount as sum of paid_amount across invoices (actual paid sum)
+    $paidAmount = Invoice::sum('paid_amount');
 
-    // Hitung Pending Amount (selain Done Payment)
-    $pendingAmount = Invoice::where('remarks', '!=', 'DONE PAYMENT')
-      ->sum('real_payment');
+    // Compute unpaid per invoice as payment_vat - paid_amount (clamp to 0 if negative), then sum
+    $pendingAmount = Invoice::get()->reduce(function ($carry, $inv) {
+      $paid = (float) ($inv->paid_amount ?? 0);
+      $due = (float) ($inv->payment_vat ?? 0) - $paid;
+      $due = $due > 0 ? $due : 0;
+      return $carry + $due;
+    }, 0);
 
-    // Hitung Total Amount (Paid + Pending)
+    // Total is the sum of paid + unpaid (should equal sum of payment_vat across invoices)
     $totalAmount = $paidAmount + $pendingAmount;
 
     // Ambil semua data invoice untuk tabel

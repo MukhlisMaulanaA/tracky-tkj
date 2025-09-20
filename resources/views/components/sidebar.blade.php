@@ -31,7 +31,7 @@
               ['name' => 'Daftar Payment', 'href' => route('payments.index'), 'icon' => 'list'],
           ],
       ],
-      ['name' => 'Salary Tracker', 'href' => route('salaries.index'), 'icon' => 'dollar-sign'],
+      // ['name' => 'Salary Tracker', 'href' => route('salaries.index'), 'icon' => 'dollar-sign'],
   ];
 @endphp
 
