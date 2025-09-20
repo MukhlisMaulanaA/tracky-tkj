@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - main (sesuaikan dengan branch yang digunakan)
+      - main
 
 jobs:
   build-js-production:
@@ -47,4 +47,4 @@ jobs:
       - name: Deploy to Development
         env:
           DOT_ENV: ${{ secrets.DOT_ENV_PRODUCTION }}
-        run: php vendor/bin/dep deploy ServerProduction branch=main (sesuaikan dengan branch yang digunakan)
+        run: php vendor/bin/dep deploy ServerProduction branch=main
