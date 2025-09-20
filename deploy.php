@@ -72,7 +72,7 @@ task('deploy', [
 ]);
 
 // [Optional] jika deploy gagal maka deployer akan otomatis melakukan unlock
-// after('deploy:failed', 'deploy:unlock');
+after('deploy:failed', 'deploy:unlock');
 
 // uncomment baris kode dibawah jika ingin melakukan migrate database sebelum dilakukan symlink folder
 
