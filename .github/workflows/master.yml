@@ -49,4 +49,4 @@ jobs:
       - name: Deploy to Development
         env:
           DOT_ENV: ${{ secrets.DOT_ENV_PRODUCTION }}
-        run: php vendor/bin/dep deploy id-dci-web1786.main-hosting.eu branch=main
+        run: php vendor/bin/dep deploy id-dci-web1786.main-hosting.eu
