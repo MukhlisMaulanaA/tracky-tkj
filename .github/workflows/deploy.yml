@@ -30,11 +30,11 @@ jobs:
         run: composer install --no-dev
 
       - name: Deploy to FTP
-        uses: SamKirkland/FTP-Deploy-Action@v3.1.2
+        uses: sand4rt/ftp-deployer@v1.8
         with:
-          server: 46.202.138.89
+          host: 46.202.138.89
           username: u265238521.AdminTKJ
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ${{ secrets.FTP_PATH }}
+          remote_folder: ${{ secrets.FTP_PATH }}
           port: 21
-          local-dir: ./
+          local-folder: ./
