@@ -25,14 +25,13 @@ jobs:
         run: composer install --no-dev
 
       - name: Deploy to FTP
-        uses: SamKirkland/FTP-Deploy-Action@4.0.0
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
-          server: '${{ secrets.FTP_SERVER }}'
-          username: '${{ secrets.FTP_USERNAME }}'
-          password: '${{ secrets.FTP_PASSWORD }}'
-          server-dir: '${{ secrets.FTP_PATH }}'
+          server: ftp.tanjungkaryajaya.co.id
+          username: u265238521.AdminTKJ
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_PATH }}
           local-dir: ./
-          git-ftp-args: '--all'
 
       - name: Clear Cached Files
         run: php artisan optimize:clear
