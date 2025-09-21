@@ -17,21 +17,23 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.2"
-      
-      - name: Update Composer
-        run: composer update
-      
+
+      - name: Cache Composer Dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
       - name: Install Composer Dependencies
         run: composer install --no-dev
 
       - name: Deploy to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
-          server: 46.202.138.89
-          username: u265238521.AdminTKJ
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: ${{ secrets.FTP_PATH }}
           local-dir: ./
-
-      - name: Clear Cached Files
-        run: php artisan optimize:clear
