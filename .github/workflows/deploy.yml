@@ -27,7 +27,7 @@ jobs:
       - name: Deploy to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
-          server: ftp.tanjungkaryajaya.co.id
+          server: 46.202.138.89
           username: u265238521.AdminTKJ
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: ${{ secrets.FTP_PATH }}
