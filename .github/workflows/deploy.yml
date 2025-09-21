@@ -29,6 +29,9 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --no-dev
 
+      - name: Build Project
+        run: npm run build
+
       - name: Deploy to FTP
         uses: sand4rt/ftp-deployer@v1.8
         with:
