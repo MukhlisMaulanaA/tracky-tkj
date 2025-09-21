@@ -37,4 +37,3 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           remote_folder: ${{ secrets.FTP_PATH }}
           port: 21
-          local-folder: ./
