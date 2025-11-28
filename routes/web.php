@@ -6,6 +6,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PurchaseOrderController;
 
 Route::get('/', function () {
   return redirect()->route('login');
@@ -67,6 +68,14 @@ Route::middleware('auth')->group(function () {
     // API untuk select2 & detail invoice
     Route::get('invoices/select2', [PaymentController::class, 'invoiceSelect2'])->name('invoices.select2');
     Route::get('invoices/{invoice}/detail', [PaymentController::class, 'invoiceDetail'])->name('invoices.detail');
+  });
+
+  // Purchase Orders routes
+  Route::prefix('purchase_orders')->name('purchase_orders.')->group(function () {
+    Route::get('/', [PurchaseOrderController::class, 'index'])->name('index');
+    Route::get('/create', [PurchaseOrderController::class, 'create'])->name('create');
+    Route::post('/', [PurchaseOrderController::class, 'store'])->name('store');
+    Route::get('/{purchase_order}', [PurchaseOrderController::class, 'show'])->name('show');
   });
 
 

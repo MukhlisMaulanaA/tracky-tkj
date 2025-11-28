@@ -12,6 +12,16 @@
           ],
       ],
       [
+          'name' => 'Purchase Order',
+          'href' => route('purchase_orders.index'),
+          'icon' => 'book-check',
+          'hasSubmenu' => true,
+          'submenu' => [
+              ['name' => 'Tambah PO', 'href' => route('purchase_orders.create'), 'icon' => 'plus'],
+              ['name' => 'Daftar PO', 'href' => route('purchase_orders.index'), 'icon' => 'list'],
+          ],
+      ],
+      [
           'name' => 'Invoice Tracker',
           'href' => route('invoices.index'),
           'icon' => 'file-text',
